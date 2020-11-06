@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ATA Obs Portal</title>
+	<style>
+		body {background-color: #123456; overflow-y: scroll;}
+	</style>
+</head>
+<body>
+	<div id="top_spacer" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
+		<br><br><br>
+	</div>
+
+	<div id="top_text" style="position: sticky; left: 50%; top: 0; background-color: #888; width: 50%; height: 10%; padding: 10px 0; transform: translate(-50%, 0); color: #ddd; text-align: center; font-size: 30px; font-family: Verdana; z-index: 2">
+		
+	</div>
+
+	<div id="top_spacer_2" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
+		<br><br><br>
+	</div>
+
+	<div id="files" style="position: relative; left: 0; top: 0; color: #fff; overflow-y: scroll; font-family: Verdana; font-size: 20px; text-align: center">
+	</div>
+
+	<div id="first_type_href" style="position:fixed; background-color: #888; left: 15%; top: 50%; font-family: Verdana; font-size: 20px; transform: translate(-50%, -50%); padding: 10px 10px">
+	</div>
+
+	<div id="second_type_href" style="position: fixed; background-color: #888; left: 85%; top: 50%; font-family: Verdana; font-size: 20px; transform: translate(-50%, -50%); padding: 10px 10px">
+	</div>
+
+	<div id="obs_return" style="position: fixed; background-color: #888; left: 10%; top: 5%; font-family: Verdana; font-size: 20px; transform: translate(-50%, 0%); padding: 10px 10px">
+	</div>
+</body>
+
+<script type="text/javascript">
+	function resizeIframe(obj) {
+		obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+		obj.style.width = obj.contentWindow.document.documentElement.scrollWidth + 'px';
+	}
+
+	var url = window.location.search
+	var urlParams = new URLSearchParams(url);
+	var obs = urlParams.get("obs");
+	var folder = urlParams.get("folder")
+	var plot_spec = urlParams.get("plot_spec")
+
+	document.getElementById("top_text").innerHTML = obs + " | " + folder + " | " + plot_spec
+
+	var plot_types = ['waterfall', 'spectrum', 'timeseries']
+
+
+	var req = new XMLHttpRequest;
+	req.open("GET", "/getdirlisting?obs=" + obs + "&folder=" + folder)
+	req.send();
+
+	var filesdiv = document.getElementById("files")
+
+	req.onreadystatechange = function(){
+		if (this.readyState == 4 && this.status == 200){
+			var dirlisting = this.responseText.split(",")
+			if (folder == "ics"){
+				dirlisting = dirlisting.filter(item => item.includes("ics_" + urlParams.get("ics")))
+			}
+
+			dirlisting = dirlisting.filter(item => item.includes(plot_spec))
+
+			var corrected_listing = []
+
+			console.log(dirlisting)
+
+			//now we need to sort the files by timestamp - it's a bit convoluted...
+			//first we get the time interval for each file
+			var time_diff = dirlisting[0].split(".")[dirlisting[0].split(".").length - 2].split("_")
+			console.log(time_diff)
+			time_diff = time_diff[2] + " " + time_diff[4]
+			time_diff = time_diff.replaceAll("s", '', 2).split(" ")
+			console.log(time_diff)
+			time_diff = time_diff[1] * 1 - time_diff[0] * 1
+			console.log(time_diff)
+
+			for (var time = 0; time < time_diff * dirlisting.length; time += time_diff){
+				var element = dirlisting.filter(item => (item.includes(String(time)) && item.includes(String(time + time_diff))))[0]
+				corrected_listing.push(element)
+			}
+
+			console.log(corrected_listing)
+
+			dirlisting = corrected_listing
+
+			for (var i = 0; i < dirlisting.length; i++){
+				filesdiv.innerHTML += dirlisting[i] + "<br>"
+				filesdiv.innerHTML += "<iframe style='position: relative; display: inline-block; left: 0%; transform: translate(0%, 0)' src=/fetchimage?path=" + obs + "/" + folder + "/" + dirlisting[i] + " onload='resizeIframe(this)'></iframe><br>"
+				setTimeout(function(){}, 100)
+			}
+		}
+	}
+
+	document.getElementById("obs_return").innerHTML = "<a href=/obs?obs=" + obs + "><- Back to obs</a>"
+
+	var current_url = window.location.search
+
+	//create hrefs to other plots of the same folder
+	var outlying = plot_types.filter(type => type != plot_spec)
+
+	var first_url = current_url.replaceAll(plot_spec, outlying[0])
+	document.getElementById("first_type_href").innerHTML = "<a href='" + first_url + "'><- " + outlying[0] + "</a>"
+	var second_url = current_url.replaceAll(plot_spec, outlying[1])
+	document.getElementById("second_type_href").innerHTML = "<a href='" + second_url + "'>" + outlying[1] + " -></a>"
+
+
+</script>
+
+</html>

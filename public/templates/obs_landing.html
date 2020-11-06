@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<title>
+			ATA Obs Portal
+		</title>
+
+		<style>
+			body {background-color: #123456;}
+			.folderdiv {text-align: center; font-size: 25px; width: 10%; height: 55%; top: 40%;}
+
+						/* width */
+			::-webkit-scrollbar {
+				width: 10px;
+			}
+
+			/* Track */
+			::-webkit-scrollbar-track {
+				background: #222;
+			}
+
+			/* Handle */
+			::-webkit-scrollbar-thumb {
+				background: #456789;
+			}
+
+			/* Handle on hover */
+			::-webkit-scrollbar-thumb:hover {
+				background: #345678;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="home_return" style="position: fixed; background-color: #888; left: 10%; top: 5%; font-family: Verdana; font-size: 20px; transform: translate(-50%, 0); padding: 10px 10px">
+			<a href='/'><- Back to home</a>
+		</div>
+
+		<div id="obsname" style="position: fixed; left: 50%; top: 5%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; font-size: 20px">
+		</div>
+
+		<iframe style="position: fixed; left: 20%; top: 23.5%; height: 100px; width: 100px; transform: translate(-50%, 0); border: none" src="images/waterfall_icon.png">
+		</iframe>
+
+		<div style="position: fixed; left: 20%; top: 15%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; font-size: 20px">
+			Waterfall
+		</div>
+
+
+		<iframe style="position: fixed; left: 40%; top: 23.5%; height: 100px; width: 100px; transform: translate(-50%, 0); border: none" src="images/spectrum_icon.png">
+		</iframe>
+
+		<div style="position: fixed; left: 40%; top: 15%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; font-size: 20px">
+			Spectrum
+		</div>
+
+		<iframe style="position: fixed; left: 60%; top: 23.5%; height: 100px; width: 100px; transform: translate(-50%, 0); border: none" src="images/timeseries_icon.png">
+		</iframe>
+
+		<div style="position: fixed; left: 60%; top: 15%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; font-size: 20px">
+			Time-series
+		</div>
+
+		<iframe style="position: fixed; left: 80%; top: 42.5%; height: 100px; width: 100px; transform: translate(-50%, 0); border: none" src="images/candidate_icon.png">
+		</iframe>
+
+		<div style="position: fixed; left: 80%; top: 35%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; font-size: 20px">
+			Candidates
+		</div>
+
+		<div id="folders_waterfall" class="folderdiv" style="position: fixed; left: 20%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; overflow-y: scroll">
+		</div>
+
+		<div id="folders_spectrum" class="folderdiv" style="position: fixed; left: 40%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; overflow-y: scroll">
+		</div>
+
+		<div id="folders_timeseries" class="folderdiv" style="position: fixed; left: 60%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; overflow-y: scroll">
+		</div>
+
+
+		<div id="cands_href_container" style="position: fixed; left: 80%; top: 59%; width: 7%; transform: translate(-50%, 0); background-color: #88a; padding: 10px 10px; font-family: Verdana; text-align: center; font-size: 20px">
+			<a id="cands_href" href='/cands?obs=' style='text-align: center'>
+				View ->
+			</a>
+		</div>
+
+	</body>
+
+	<script>
+
+		var url = window.location.search
+		var urlParams = new URLSearchParams(url);
+		var obs = urlParams.get("obs");
+		document.getElementById("obsname").innerHTML = obs
+		document.getElementById("cands_href").href += obs
+
+		var req = new XMLHttpRequest;
+		req.open("GET", "/obsspec?obs=" + obs)
+		req.send();
+
+		var plot_types = ['waterfall', 'spectrum', 'timeseries']
+
+		var hrefstyle = "style='background-color: #aaa; padding: 5px'"
+
+		req.onreadystatechange = function(){
+			if (this.readyState == 4 && this.status == 200){
+				var folderlist = this.responseText;
+				folderlist = folderlist.split(",")
+				for (var i = 0; i < folderlist.length; i++){
+					if (folderlist[i] == "ics"){
+						
+						for (var j = 0; j < plot_types.length; j++){
+							document.getElementById("folders_"+plot_types[j]).innerHTML += "<a " + hrefstyle + " href='/viewdata?obs=" + obs + "&folder=" + folderlist[i] + "&plot_spec=" + plot_types[j] + "&ics=a'>ics_a</a><br><br>"
+						}
+
+						for (var j = 0; j < plot_types.length; j++){
+							document.getElementById("folders_"+plot_types[j]).innerHTML += "<a " + hrefstyle + "href='/viewdata?obs=" + obs + "&folder=" + folderlist[i] + "&plot_spec=" + plot_types[j] + "&ics=b'>ics_b</a><br><br>"
+						}
+					}
+					else{
+						for (var j = 0; j < plot_types.length; j++){
+							document.getElementById("folders_"+plot_types[j]).innerHTML += "<a " + hrefstyle + "href='/viewdata?obs=" + obs + "&folder=" + folderlist[i] + "&plot_spec=" + plot_types[j] + "'>" + folderlist[i] + "</a><br><br>"
+						}
+					}
+				}
+			}
+		}
+	</script>
+
+</html>

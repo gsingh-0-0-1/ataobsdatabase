@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ATA Obs Portal</title>
+	<style>
+		body {background-color: #123456; overflow-y: scroll;}
+	</style>
+</head>
+<body>
+	<div id="top_spacer" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
+		<br><br><br>
+	</div>
+
+	<div id="top_text" style="position: sticky; left: 50%; top: 0; background-color: #888; width: 50%; height: 10%; padding: 10px 0; transform: translate(-50%, 0); color: #ddd; text-align: center; font-size: 30px; font-family: Verdana; z-index: 2">
+		
+	</div>
+
+	<div id="top_spacer_2" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
+		<br><br><br>
+	</div>
+
+	<div id="obs_return" style="position: fixed; background-color: #888; left: 10%; top: 5%; font-family: Verdana; font-size: 20px; transform: translate(-50%, 0%); padding: 10px 10px">
+	</div>
+
+	<div id="files" style="position: relative; left: 0; top: 0; color: #fff; overflow-y: scroll; font-family: Verdana; font-size: 20px; text-align: center">
+	</div>
+
+</body>
+
+<script type="text/javascript">
+	function resizeIframe(obj, scale) {
+		obj.style.height = (obj.contentWindow.document.documentElement.scrollHeight * scale) + 'px';
+		obj.style.width = (obj.contentWindow.document.documentElement.scrollWidth * scale) + 'px';
+	}
+
+	var url = window.location.search
+	var urlParams = new URLSearchParams(url);
+	var obs = urlParams.get("obs");
+
+	document.getElementById("top_text").innerHTML = obs + " | cands"
+
+	document.getElementById("obs_return").innerHTML = "<a href=/obs?obs=" + obs + "><- Back to obs</a>"
+
+	var filesdiv = document.getElementById("files")
+
+	var req = new XMLHttpRequest; 
+	req.open("GET", '/getcandlist?obs=' + obs)
+	req.send();
+
+	req.onreadystatechange = function(){
+		if (this.readyState == 4 && this.status == 200){
+			var dirlisting = this.responseText.split(",")
+			for (var i = 0; i < dirlisting.length; i++){
+				filesdiv.innerHTML += dirlisting[i] + "<br>"
+				filesdiv.innerHTML += "<iframe style='position: relative; display: initial; left: 0%;' src=/fetchcand?obs=" + obs + "&file=" + dirlisting[i] + " onload='resizeIframe(this, 1)'></iframe><br>"
+				setTimeout(function(){}, 100)
+			}
+		}
+	}
+
+</script>
+
+</html>
