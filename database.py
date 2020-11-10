@@ -77,11 +77,14 @@ for obs in obs_list:
 	if "sql.written" in os.listdir(database_dir + obs):
 		pass
 	else:
-		try:
-			f = open(parent_stem + obs_dir + obs + "/1a/obs.header")
-		except FileNotFoundError:
-			f = open(parent_stem + obs_dir + obs + "/1k/obs.header")
-		f = f.read()
+		antennalist = ['1a', '1c', '1f', '1k', '2a', '2h', '4g', '4j', '5c']
+		for antenna in antennalist:
+			try:
+				f = open(parent_stem + obs_dir + obs + "/" + antenna + "/obs.header")
+				f = f.read()
+				break
+			except FileNotFoundError:
+				pass
 
 		if dosql:
 			f = f.split('\n')
