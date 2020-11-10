@@ -1,5 +1,6 @@
 const express = require('express')
 const sharp = require('sharp')
+var mysql = require('mysql');
 var fs = require('fs');
 
 const app = express()
@@ -7,14 +8,41 @@ const port = 80
 
 const parent_stem = '/Volumes/SETI_DATA/'
 const parent_obs_dir = '/Volumes/SETI_DATA/new_obs/'
+const parent_database_dir = '/Volumes/SETI_DATA/obs_database/'
+
+const db_file = 'header_info.db'
 
 //app.use(express.static('static'))
 app.use(express.static('public'));
 
+const user = "";
+const password = "";
+const host = "127.0.0.1"
+
 app.get('/obslist', (req, res) => {
-	var files = fs.readdirSync(parent_obs_dir);
-	files = files.filter(file => !file.startsWith("."))
-	res.send(files.join(","));
+	var files = fs.readdirSync(parent_database_dir);
+
+	var connection = mysql.createConnection({
+		host     : host,
+		user     : user,
+		password : password,
+		database : 'obs_info'
+	});
+
+	var results_return = ''
+
+	connection.connect()
+
+	connection.query("select obs_name from obs_details", function (error, results, fields) {
+  		//if (error) throw error;
+  		for (var i = 0; i < results.length; i++){
+  			results_return += results[i].obs_name + ","
+  		}
+		res.send(results_return)
+  	});
+
+	//files = files.filter(file => !file.startsWith("."))
+	//res.send(files.join(","));
 })
 
 app.get('/obsspec', (req, res) => {
@@ -22,7 +50,7 @@ app.get('/obsspec', (req, res) => {
 	var urlParams = new URLSearchParams(url);
 	var obs = urlParams.get("obs");
 	var files = fs.readdirSync(parent_stem + "obs_database/" + obs)
-	files = files.filter(file => !file.startsWith("."))
+	files = files.filter(file => !file.includes("."))
 	res.send(files.join(","));
 })
 
@@ -48,8 +76,8 @@ app.get('/getcandlist', (req, res) => {
 	var url = req.url.split("?")[1];
 	var urlParams = new URLSearchParams(url);
 	var obs = urlParams.get("obs");
-	var files = fs.readdirSync(parent_obs_dir + obs + "/ics/candidates")
-	files = files.filter(file => !file.startsWith("."));
+	var files = fs.readdirSync(parent_database_dir + obs + "/ics/candidates")
+	files = files.filter(file => file.includes(".png"));
 	res.send(files.join(","))
 })
 
@@ -63,8 +91,97 @@ app.get('/fetchcand', (req, res) => {
 	res.sendFile(parent_stem + "obs_database/" + obs + "/ics/candidates/" + file)
 })
 
+app.get('/querybysource', (req, res) => {
+	var url = req.url.split("?")[1];
+	var urlParams = new URLSearchParams(url);
+	var source = urlParams.get("source")
+
+	var connection = mysql.createConnection({
+		host     : host,
+		user     : user,
+		password : password,
+		database : 'obs_info'
+	});
+
+	var results_return = '';
+
+	connection.connect();
+
+	connection.query("select obs_name from obs_details where source like '%" + source + "%'", function (error, results, fields) {
+  		//if (error) throw error;
+  		for (var i = 0; i < results.length; i++){
+  			results_return += results[i].obs_name + ","
+  		}
+		res.send(results_return)
+  	});
+
+	connection.end()
+})
+
+app.get('/querybydate', (req, res) => {
+	var url = req.url.split("?")[1];
+	var urlParams = new URLSearchParams(url);
+	var date = urlParams.get("date")
+	if (date == ''){
+		res.send("")
+		return ''
+	}
+
+	//verify date format
+
+
+	var comparison = urlParams.get("comp")
+
+	var connection = mysql.createConnection({
+		host     : host,
+		user     : user,
+		password : password,
+		database : 'obs_info'
+	});
+
+	var results_return = ''
+
+	connection.connect()
+
+	if (comparison == "on"){
+		connection.query("select obs_name from obs_details where date LIKE '%" + date + "%'", function(error, results, fields){
+			//if (error) throw error;
+			for (var i = 0; i < results.length; i++){
+				results_return += results[i].obs_name + ","
+			}
+			res.send(results_return)
+		})
+	}
+	else{
+		if (comparison == "after"){
+			comp_op = ">"
+		}
+		if (comparison == "before"){
+			comp_op = "<"
+		}
+		connection.query("select obs_name from obs_details where date " + comp_op + " '" + date + "'", function(error, results, fields){
+			//if (error) throw error;
+			if (results == undefined){
+				res.send("")
+			}
+			else{
+				for (var i = 0; i < results.length; i++){
+					results_return += results[i].obs_name + ","
+				}
+				res.send(results_return)
+			}
+		})
+	}
+
+	connection.end()
+})
+
 app.get('/', (req, res) => {
 	res.sendFile('public/templates/main.html', {root: __dirname})
+})
+
+app.get('/obssearch', (req, res) => {
+	res.sendFile('public/templates/obssearch.html', {root: __dirname})
 })
 
 app.get('/obs', (req, res) => {

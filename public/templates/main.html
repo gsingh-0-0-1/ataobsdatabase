@@ -6,31 +6,107 @@
 
 		<style type="text/css">
 			body {background-color: #123456}
+			.button {
+				background-color: var(--bcolor);
+				border: none;
+				color: white;
+				padding: 15px 24px;
+				text-align: center;
+				display: inline-block;
+				font-size: var(--fsize);
+				margin: 4px 2px;
+				cursor: pointer;
+            }
 		</style>
 	<head>
 
 	<body>
+		<div id="coloring" style="position: fixed; top: 0; left: 0; z-index: -1; background-image: linear-gradient(to bottom, #123456, #345678); width: 100%; height: 100%;">
+		</div>
+
 		<div style="position: fixed; left: 3%: top: 2%; color: #888; font-size: 45px; font-family: Verdana">
 			&nbsp;ATA Observation Portal
 		</div>
-		<div style="position: fixed; left: 0%; top: 10%; background-color: #444499; width: 95%; height: 85%; overflow-y: scroll;" id="obslist">
+		<div style="position: fixed; left: 0%; top: 10%; background-image: linear-gradient(to bottom, #444499, #5a5a99); width: 95%; height: 85%; overflow-y: scroll;" id="obslist">
 
 		</div>
+
+		<div id="searchbysource" style="position: fixed; top: 20%; left: 70%; font-family: Verdana; font-size: 18px; color: #aaa">
+			Search by source name: <br>
+			<input id="source_input" name="source" type="text" placeholder="Source name" style="border: 4px solid #aa2222; font-family: Verdana; outline: none;" onkeypress="javascript:sourceMod(event)">
+		</div>
+
+		<div id="searchbydate" style="position: fixed; top: 40%; left: 70%; font-family: Verdana; font-size: 18px; color: #aaa">
+			Search by observation date: <br>
+			<input id="date_input" name="date" type="text" placeholder="YYYY-MM-DD" style="border: 4px solid #22aa22; font-family: Verdana; outline: none;" onkeypress="javascript:dateMod(event)">
+			<select id="datecomp" style="outline: none">
+				<option value="on">On</option>
+				<option value="after">After</option>
+				<option value="before">Before</option>
+			</select>
+		</div>
+
 	</body>
 
 	<script>
+		function createObsList(obslist){
+        	obslist = obslist.split(",");
+        	var obscontainer = document.getElementById("obslist")
+        	obscontainer.innerHTML = ''
+        	for (var i = 0; i < obslist.length; i++){
+        		if (obslist[i] == ''){
+        			continue
+        		}
+        		var obs_href = "<a href='/obs?obs=" + obslist[i] + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: 0%; margin-top: 5%; height: 7%; width: 50%; text-indent: 7%; padding: 10px; font-size: 32px; font-family: Verdana'>" + obslist[i] + " </a><br>"
+        		obscontainer.innerHTML += obs_href
+        	}
+		}
+
+		function sourceMod(event){
+			if (event.keyCode == 13 || event.which == 13){
+			}
+			else{
+				return
+			}
+			var sourcename = document.getElementById('source_input').value
+			var source_req = new XMLHttpRequest;
+			source_req.open("GET", "/querybysource?source=" + sourcename)
+			source_req.send()
+			source_req.onreadystatechange = function(){
+				if (this.readyState == 4 && this.status == 200){
+					var obslist = this.responseText
+					createObsList(obslist)
+				}
+			}
+		}
+
+		function dateMod(event){
+			if (event.keyCode == 13 || event.which == 13){
+			}
+			else{
+				return
+			}
+			var date = document.getElementById('date_input').value
+			var datecomp = document.getElementById('datecomp').value
+			var date_req = new XMLHttpRequest;
+			date_req.open("GET", "/querybydate?date=" + date + "&comp=" + datecomp)
+			date_req.send();
+			date_req.onreadystatechange = function(){
+				if (this.readyState == 4 && this.status == 200){
+					var obslist = this.responseText;
+					console.log(obslist)
+					createObsList(obslist)
+				}
+			}		
+		}
+
 		var req = new XMLHttpRequest;
 		req.open("GET", "/obslist")
         req.send()
         req.onreadystatechange = function(){
         	if (this.readyState == 4 && this.status == 200){
             	var obslist = this.responseText;
-            	obslist = obslist.split(",");
-            	var obscontainer = document.getElementById("obslist")
-            	for (var i = 0; i < obslist.length; i++){
-            		var obs_href = "<a href='/obs?obs=" + obslist[i] + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: 0%; margin-top: 5%; height: 7%; width: 50%; text-indent: 7%; padding: 10px; font-size: 32px; font-family: Verdana'>" + obslist[i] + " </a><br>"
-            		obscontainer.innerHTML += obs_href
-            	}
+            	createObsList(obslist);
             }
         }
 	</script>

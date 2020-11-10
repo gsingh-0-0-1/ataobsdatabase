@@ -7,6 +7,9 @@
 	</style>
 </head>
 <body>
+	<div id="coloring" style="position: fixed; top: 0; left: 0; z-index: -1; background-image: linear-gradient(to bottom, #123456, #345678); width: 100%; height: 100%;">
+	</div>
+
 	<div id="top_spacer" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
 		<br><br><br>
 	</div>
@@ -43,8 +46,13 @@
 	var obs = urlParams.get("obs");
 	var folder = urlParams.get("folder")
 	var plot_spec = urlParams.get("plot_spec")
+	var desc = ''
 
-	document.getElementById("top_text").innerHTML = obs + " | " + folder + " | " + plot_spec
+	if (urlParams.get("ics") == "a" || urlParams.get("ics") == "b"){
+		var desc = "_" + urlParams.get("ics")
+	}
+
+	document.getElementById("top_text").innerHTML = obs + " | " + folder + desc + " | " + plot_spec
 
 	var plot_types = ['waterfall', 'spectrum', 'timeseries']
 
@@ -95,7 +103,9 @@
 		}
 	}
 
-	document.getElementById("obs_return").innerHTML = "<a href=/obs?obs=" + obs + "><- Back to obs</a>"
+	var hrefstyle = "style='text-decoration:none;'"
+
+	document.getElementById("obs_return").innerHTML = "<a " + hrefstyle + " href=/obs?obs=" + obs + "><- Back to obs</a>"
 
 	var current_url = window.location.search
 
@@ -103,9 +113,9 @@
 	var outlying = plot_types.filter(type => type != plot_spec)
 
 	var first_url = current_url.replaceAll(plot_spec, outlying[0])
-	document.getElementById("first_type_href").innerHTML = "<a href='" + first_url + "'><- " + outlying[0] + "</a>"
+	document.getElementById("first_type_href").innerHTML = "<a " + hrefstyle + " href='" + first_url + "'><< " + outlying[0] + "</a>"
 	var second_url = current_url.replaceAll(plot_spec, outlying[1])
-	document.getElementById("second_type_href").innerHTML = "<a href='" + second_url + "'>" + outlying[1] + " -></a>"
+	document.getElementById("second_type_href").innerHTML = "<a " + hrefstyle + " href='" + second_url + "'>" + outlying[1] + " >></a>"
 
 
 </script>

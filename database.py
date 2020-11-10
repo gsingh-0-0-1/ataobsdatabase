@@ -7,8 +7,17 @@ from blimpy.io.fil_reader import FilReader
 import os
 import sys
 from PIL import Image
+import re
 
-sampling_time = 0.01515151515
+dosql = sys.argv[1]
+
+if dosql == "true":
+	dosql = True
+	import mysql.connector
+else:
+	dosql = False
+
+time_break_interval = 60
 
 print("Enter parent stem directory - the directory which contains the folder of all observations: ")
 parent_stem = input("Leave blank to autoset to /Volumes/SETI_DATA/ : ")
@@ -24,10 +33,10 @@ if obs_dir == '':
 	obs_dir = "new_obs/"
 
 print()
-print("Enter the subfolder for the database: ")
-database_dir = input("Leave blank to autoset to obs_database/ : ")
+print("Enter the folder for the database: ")
+database_dir = input("Leave blank to autoset to obs_database/ in the same dir as the obs folder : ")
 if database_dir == '':
-	database_dir = "obs_database/"
+	database_dir = parent_stem + "obs_database/"
 
 print("Scanning parent directory...")
 
@@ -35,32 +44,95 @@ obs_list = [f.path.split("/")[-1] for f in os.scandir(parent_stem + obs_dir) if 
 
 print("Initializing database directory...")
 
-if os.path.isdir(parent_stem + database_dir):
+if os.path.isdir(database_dir):
 	pass
 else:
-	os.mkdir(parent_stem + database_dir)
+	os.mkdir(database_dir)
+
+
+dblist = os.listdir(database_dir)
+
+if dosql:
+	cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3],
+                              host='127.0.0.1',
+                              database='obs_info')
+
+	cnx.close()
 
 print("Scanning observation directories...")
 
 #here's where most of the processing occurs
 for obs in obs_list:
 	#check/conditionally make directories for each obs
-	if os.path.isdir(parent_stem + database_dir + obs): 
+	if os.path.isdir(database_dir + obs): 
 		pass
 	else: 
-		os.mkdir(parent_stem + database_dir + obs)
+		os.mkdir(database_dir + obs)
 
-	#get files in the obs dir
+	#get files/directories in the obs dir
 	this_obs_subdir = [f.path.split("/")[-1] for f in os.scandir(parent_stem + obs_dir + obs) if f.is_dir()]
 
 	print(obs)
 
-	#get sub-directories inside the obs dir
+	if "sql.written" in os.listdir(database_dir + obs):
+		pass
+	else:
+		try:
+			f = open(parent_stem + obs_dir + obs + "/1a/obs.header")
+		except FileNotFoundError:
+			f = open(parent_stem + obs_dir + obs + "/1k/obs.header")
+		f = f.read()
+
+		if dosql:
+			f = f.split('\n')
+			f = [re.sub("\s+", ",", line.strip()) for line in f]
+
+			for line in f:
+				elements = line.split(",")
+				if "SOURCE" in line:
+					source = elements[1]
+				if "UTC_START" in line:
+					utc = elements[1]
+
+			time = utc.split("-")[-1]
+			date = utc.replace(time, '')[:-1]
+
+			command = '''insert into obs_details (obs_name, source, date, time) values
+						("''' + obs + '''", "''' + source + '''", "''' + date + '''", "''' + time + '''")
+						'''
+
+			cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3],
+	                              host='127.0.0.1',
+	                              database='obs_info')
+
+			cnx.cursor().execute(command)
+
+			cnx.commit()
+
+			cnx.close()
+
+			f = open(database_dir + obs + "/sql.written", "w")
+			f.close()
+
+		else:
+			writeheader = open(database_dir + obs + "/obs.header", "w")
+			writeheader.write(f)
+			writeheader.close()
+
+	#look at sub-directories inside the obs dir
 	for subd in this_obs_subdir:
 
-		f_dir = parent_stem + database_dir + obs + "/" + subd
+		f_dir = database_dir + obs + "/" + subd
 
 		obs_f_dir = parent_stem + obs_dir + obs + "/" + subd
+
+		if os.path.isdir(f_dir): 
+			if "data.written" in os.listdir(database_dir + obs + "/" + subd):
+				continue
+			else:
+				pass
+		else: 
+			os.mkdir(f_dir)
 
 		if "ics" in subd:
 			if "candidates" in os.listdir(obs_f_dir):
@@ -81,36 +153,13 @@ for obs in obs_list:
 					f = open(f_dir + "/candidates/cands.written", "w")
 					f.close()
 
-		if os.path.isdir(f_dir): 
-			if "data.written" in os.listdir(parent_stem + database_dir + obs + "/" + subd):
-				continue
-			else:
-				pass
-		else: 
-			os.mkdir(f_dir)
-
 		print("\t|" + subd)
 
 		#get a list of .fil files inside each sub-directory inside each obs dir
 		file_list = [f.path.split("/")[-1] for f in os.scandir(obs_f_dir) if (".fil" in f.path)]
 
-		if "ics" not in subd:
-			#extract obs info from the header
-			header = open(obs_f_dir + "/obs.header")
-			header = header.read().split("\n")
-			obs_time_raw = [line for line in header if "TSAMP" in line][0]
-			obs_time = ''
-
-			for ch in obs_time_raw:
-				if ch.isdigit() or ch == '.':
-					obs_time += ch
-
-			print("\t\t|OBS TIME: " + obs_time + "s")
-
 
 		for file in file_list:
-
-			time_break_interval = 60
 
 			print("\t\t|" + file)
 
@@ -119,11 +168,13 @@ for obs in obs_list:
 
 			sampling_time = f.header['tsamp']
 
-			if "ics" in file:
-				fsize = os.path.getsize(obs_f_dir + "/" + file) - sys.getsizeof(f.header)
-				samples = round(fsize / (f.header['nchans'] * (f.header['nbits'] / 8)))
-				obs_time = samples * sampling_time
-				time_break_interval = 60
+			#if "ics" in file:
+			fsize = os.path.getsize(obs_f_dir + "/" + file) - sys.getsizeof(f.header)
+			samples = round(fsize / (f.header['nchans'] * (f.header['nbits'] / 8)))
+			obs_time = samples * sampling_time
+
+			print("\t\t|OBS TIME: " + str(obs_time) + "s")
+
 
 			for tstamp in range(0, int(float(obs_time)), time_break_interval):
 				start = int(tstamp/sampling_time)

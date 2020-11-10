@@ -1,0 +1,40 @@
+<html>
+	<head>
+		<title>
+			ATA Obs Portal
+		</title>
+
+		<style type="text/css">
+			body {background-color: #123456}
+		</style>
+	<head>
+
+	<body>
+		<div id="coloring" style="position: fixed; top: 0; left: 0; z-index: -1; background-image: linear-gradient(to bottom, #123456, #345678); width: 100%; height: 100%;">
+		</div>
+
+		<div style="position: fixed; left: 3%: top: 2%; color: #888; font-size: 45px; font-family: Verdana">
+			&nbsp;ATA Observation Portal
+		</div>
+		<div style="position: fixed; left: 0%; top: 10%; background-image: linear-gradient(to bottom, #444499, #5a5a99); width: 95%; height: 85%; overflow-y: scroll;" id="obslist">
+
+		</div>
+	</body>
+
+	<script>
+		var req = new XMLHttpRequest;
+		req.open("GET", "/obslist")
+        req.send()
+        req.onreadystatechange = function(){
+        	if (this.readyState == 4 && this.status == 200){
+            	var obslist = this.responseText;
+            	obslist = obslist.split(",");
+            	var obscontainer = document.getElementById("obslist")
+            	for (var i = 0; i < obslist.length; i++){
+            		var obs_href = "<a href='/obs?obs=" + obslist[i] + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: 0%; margin-top: 5%; height: 7%; width: 50%; text-indent: 7%; padding: 10px; font-size: 32px; font-family: Verdana'>" + obslist[i] + " </a><br>"
+            		obscontainer.innerHTML += obs_href
+            	}
+            }
+        }
+	</script>
+</html>
