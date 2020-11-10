@@ -211,7 +211,7 @@ for obs in obs_list:
 
 					plt.savefig(f_dir + "/" + file + '_timeseries_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
 					plt.clf()
-				except IndexError:
+				except (IndexError, NotImplementedError) as e:
 					f = open("obs.flagged", "a")
 					f.write(obs + "/" + subd + "/" + file + "\n")
 

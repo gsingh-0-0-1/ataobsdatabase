@@ -66,8 +66,11 @@
 	req.onreadystatechange = function(){
 		if (this.readyState == 4 && this.status == 200){
 			var dirlisting = this.responseText.split(",")
-			if (folder == "ics"){
+			if (folder == "ics" && urlParams.get("ics") != "none"){
 				dirlisting = dirlisting.filter(item => item.includes("ics_" + urlParams.get("ics")))
+			}
+			if (folder == "ics" && urlParams.get("ics") == "none"){
+				dirlisting = dirlisting.filter(item => item.includes("ics"))
 			}
 
 			dirlisting = dirlisting.filter(item => item.includes(plot_spec))

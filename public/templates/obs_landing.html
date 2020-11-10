@@ -125,6 +125,10 @@
 						for (var j = 0; j < plot_types.length; j++){
 							document.getElementById("folders_"+plot_types[j]).innerHTML += "<a " + hrefstyle + "href='/viewdata?obs=" + obs + "&folder=" + folderlist[i] + "&plot_spec=" + plot_types[j] + "&ics=b'>ics_b</a><br><br>"
 						}
+
+						for (var j = 0; j < plot_types.length; j++){
+							document.getElementById("folders_"+plot_types[j]).innerHTML += "<a " + hrefstyle + "href='/viewdata?obs=" + obs + "&folder=" + folderlist[i] + "&plot_spec=" + plot_types[j] + "&ics=none'>ics</a><br><br>"
+						}
 					}
 					else{
 						for (var j = 0; j < plot_types.length; j++){
