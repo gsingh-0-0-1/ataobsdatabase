@@ -93,7 +93,14 @@
 		var url = window.location.search
 		var urlParams = new URLSearchParams(url);
 		var obs = urlParams.get("obs");
-		document.getElementById("obsname").innerHTML = obs
+		var sname = new XMLHttpRequest;
+		sname.open("GET", "/getsourcename?obs=" + obs)
+		sname.send();
+		sname.onreadystatechange = function(){
+			if (this.readyState == 4 && this.status == 200){
+				document.getElementById("obsname").innerHTML = obs + " | " + this.responseText.split(",")[0]
+			}
+		}
 		document.getElementById("cands_href").href += obs
 
 		var req = new XMLHttpRequest;

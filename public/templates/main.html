@@ -57,7 +57,9 @@
         		if (obslist[i] == ''){
         			continue
         		}
-        		var obs_href = "<a href='/obs?obs=" + obslist[i] + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: 0%; margin-top: 5%; height: 7%; width: 50%; text-indent: 7%; padding: 10px; font-size: 32px; font-family: Verdana'>" + obslist[i] + " </a><br>"
+        		var obsname = obslist[i].split("|")[0]
+        		var sname = obslist[i].split("|")[1]
+        		var obs_href = "<a href='/obs?obs=" + obsname + "&source=" + sname + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: 0%; margin-top: 5%; height: 7%; width: 50%; text-indent: 7%; padding: 10px; font-size: 32px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
         		obscontainer.innerHTML += obs_href
         	}
 		}

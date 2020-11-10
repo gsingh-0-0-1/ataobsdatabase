@@ -1,6 +1,7 @@
 const express = require('express')
 var mysql = require('mysql');
 var fs = require('fs');
+const {URLSearchParams} = require('url')
 
 const app = express()
 const port = 80
@@ -32,10 +33,10 @@ app.get('/obslist', (req, res) => {
 
 	connection.connect()
 
-	connection.query("select obs_name from obs_details", function (error, results, fields) {
+	connection.query("select obs_name, source from obs_details", function (error, results, fields) {
   		//if (error) throw error;
   		for (var i = 0; i < results.length; i++){
-  			results_return += results[i].obs_name + ","
+  			results_return += results[i].obs_name + "|" + results[i].source + ","
   		}
 		res.send(results_return)
   	});
@@ -106,10 +107,10 @@ app.get('/querybysource', (req, res) => {
 
 	connection.connect();
 
-	connection.query("select obs_name from obs_details where source like '%" + source + "%'", function (error, results, fields) {
+	connection.query("select obs_name, source from obs_details where source like '%" + source + "%'", function (error, results, fields) {
   		//if (error) throw error;
   		for (var i = 0; i < results.length; i++){
-  			results_return += results[i].obs_name + ","
+  			results_return += results[i].obs_name + "|" + results[i].source + ","
   		}
 		res.send(results_return)
   	});
@@ -143,10 +144,10 @@ app.get('/querybydate', (req, res) => {
 	connection.connect()
 
 	if (comparison == "on"){
-		connection.query("select obs_name from obs_details where date LIKE '%" + date + "%'", function(error, results, fields){
+		connection.query("select obs_name, source from obs_details where date LIKE '%" + date + "%'", function(error, results, fields){
 			//if (error) throw error;
 			for (var i = 0; i < results.length; i++){
-				results_return += results[i].obs_name + ","
+				results_return += results[i].obs_name + "|" + results[i].source + ","
 			}
 			res.send(results_return)
 		})
@@ -175,6 +176,37 @@ app.get('/querybydate', (req, res) => {
 	connection.end()
 })
 
+app.get('/getsourcename', (req, res) => {
+	var url = req.url.split("?")[1];
+	var urlParams = new URLSearchParams(url);
+	var obs = urlParams.get("obs")
+	if (obs == ''){
+		res.send("")
+		return ''
+	}
+
+	var connection = mysql.createConnection({
+		host     : host,
+		user     : user,
+		password : password,
+		database : 'obs_info'
+	});	
+
+	var results_return = ''
+
+	connection.query("select source from obs_details where obs_name = '" + obs + "'", function(error, results, fields){
+		if (results == undefined){
+			res.send("")
+		}		
+		else{
+			for (var i = 0; i < results.length; i++){
+				results_return += results[i].source + ","
+			}
+			res.send(results_return)
+		}
+	})
+})
+
 app.get('/', (req, res) => {
 	res.sendFile('public/templates/main.html', {root: __dirname})
 })
@@ -195,6 +227,4 @@ app.get('/cands', (req, res) => {
 	res.sendFile('public/templates/cands.html', {root: __dirname})
 })
 
-app.listen(port, () => {
-	console.log(`Example app listening at http://localhost:${port}`);
-})
+app.listen(port, '0.0.0.0')
