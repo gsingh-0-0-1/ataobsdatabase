@@ -159,14 +159,14 @@ app.get('/querybydate', (req, res) => {
 		if (comparison == "before"){
 			comp_op = "<"
 		}
-		connection.query("select obs_name from obs_details where date " + comp_op + " '" + date + "'", function(error, results, fields){
+		connection.query("select obs_name, source from obs_details where date " + comp_op + " '" + date + "'", function(error, results, fields){
 			//if (error) throw error;
 			if (results == undefined){
 				res.send("")
 			}
 			else{
 				for (var i = 0; i < results.length; i++){
-					results_return += results[i].obs_name + ","
+					results_return += results[i].obs_name + "|" + results[i].source + ","
 				}
 				res.send(results_return)
 			}
