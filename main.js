@@ -1,14 +1,13 @@
 const express = require('express')
-const sharp = require('sharp')
 var mysql = require('mysql');
 var fs = require('fs');
 
 const app = express()
 const port = 80
 
-const parent_stem = '/Volumes/SETI_DATA/'
-const parent_obs_dir = '/Volumes/SETI_DATA/new_obs/'
-const parent_database_dir = '/Volumes/SETI_DATA/obs_database/'
+const parent_stem = ''
+const parent_obs_dir = ''
+const parent_database_dir = ''
 
 const db_file = 'header_info.db'
 
