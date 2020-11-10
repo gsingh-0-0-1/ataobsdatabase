@@ -48,7 +48,7 @@ app.get('/obsspec', (req, res) => {
 	var url = req.url.split("?")[1];
 	var urlParams = new URLSearchParams(url);
 	var obs = urlParams.get("obs");
-	var files = fs.readdirSync(parent_stem + "obs_database/" + obs)
+	var files = fs.readdirSync(parent_database_dir + obs)
 	files = files.filter(file => !file.includes("."))
 	res.send(files.join(","));
 })
@@ -58,7 +58,7 @@ app.get('/getdirlisting', (req, res) => {
 	var urlParams = new URLSearchParams(url);
 	var obs = urlParams.get("obs")
 	var folder = urlParams.get("folder")	
-	var files = fs.readdirSync(parent_stem + "obs_database/" + obs + "/" + folder)
+	var files = fs.readdirSync(parent_database_dir + obs + "/" + folder)
 	files = files.filter(file => !file.startsWith("."))
 	files = files.filter(file => file != "data.written")
 	res.send(files.join(","))
@@ -68,7 +68,7 @@ app.get('/fetchimage', (req, res) => {
 	var url = req.url.split("?")[1];
 	var urlParams = new URLSearchParams(url);
 	var path = urlParams.get("path");
-	res.sendFile(parent_stem + "obs_database/" + path)	
+	res.sendFile(parent_database_dir + path)	
 })
 
 app.get('/getcandlist', (req, res) => {
@@ -87,7 +87,7 @@ app.get('/fetchcand', (req, res) => {
 	var file = urlParams.get("file")
 	//res.sendFile(parent_obs_dir + obs + "/ics/candidates/" + file)
 	//sharp(parent_obs_dir + obs + "/ics/candidates/" + file).resize({fit:sharp.fit.contain, width:350}).toFile('public/cache/' + file)
-	res.sendFile(parent_stem + "obs_database/" + obs + "/ics/candidates/" + file)
+	res.sendFile(parent_database_dir + obs + "/ics/candidates/" + file)
 })
 
 app.get('/querybysource', (req, res) => {
