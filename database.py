@@ -173,6 +173,7 @@ for obs in obs_list:
 			except NotImplementedError:
 				f = open("obs.flagged", "a")
 				f.write(obs + "/" + subd + "/" + file + "\n")
+				f.close()
 				continue
 
 			sampling_time = f.header['tsamp']
@@ -219,6 +220,7 @@ for obs in obs_list:
 				except (IndexError, NotImplementedError) as e:
 					f = open("obs.flagged", "a")
 					f.write(obs + "/" + subd + "/" + file + "\n")
+					f.close()
 
 		f = open(f_dir + "/data.written", "w")
 		f.close()
