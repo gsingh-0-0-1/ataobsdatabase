@@ -6,11 +6,9 @@ const {URLSearchParams} = require('url')
 const app = express()
 const port = 80
 
-const parent_stem = '/mnt/datay-netStorage-40G/'
-const parent_obs_dir = '/mnt/datay-netStorage-40G/tmp_copying_obs/'
-const parent_database_dir = '/home/gurmehar/obs_database/'
-
-const db_file = 'header_info.db'
+const parent_stem = ''
+const parent_obs_dir = ''
+const parent_database_dir = ''
 
 //app.use(express.static('static'))
 app.use(express.static('public'));
