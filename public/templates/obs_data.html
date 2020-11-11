@@ -90,8 +90,13 @@
 			console.log(time_diff)
 
 			for (var time = 0; time < time_diff * dirlisting.length; time += time_diff){
-				var element = dirlisting.filter(item => (item.includes(String(time)) && item.includes(String(time + time_diff))))[0]
-				corrected_listing.push(element)
+				var element = dirlisting.filter(item => (item.includes(String(time)) && item.includes(String(time + time_diff))))
+				console.log(element)
+				for (var el = 0; el < element.length; el++){
+					if (element[el] != undefined){
+						corrected_listing.push(element[el])
+					}
+				}
 			}
 
 			console.log(corrected_listing)

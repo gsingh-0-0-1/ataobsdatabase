@@ -171,10 +171,11 @@ for obs in obs_list:
 			try:
 				f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1)
 			except NotImplementedError:
-				f = open("obs.flagged", "a")
-				f.write(obs + "/" + subd + "/" + file + "\n")
-				f.close()
-				continue
+                                print("Flagging " + obs + "...")
+                                f = open("obs.flagged", "a")
+                                f.write(obs + "/" + subd + "/" + file + "\n")
+                                f.close()
+                                continue
 
 			sampling_time = f.header['tsamp']
 

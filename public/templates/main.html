@@ -27,13 +27,13 @@
 	<head>
 
 	<body>
-		<div id="coloring" style="position: fixed; top: 0; left: 0; z-index: -1; background-image: linear-gradient(to bottom, #123456, #345678); width: 100%; height: 100%;">
+		<div id="coloring" style="position: fixed; top: 0; left: 0; z-index: -1; background-image: linear-gradient(to bottom, #123456, #507090); width: 100%; height: 100%;">
 		</div>
 
 		<div style="position: fixed; left: 3%: top: 2%; color: #888; font-size: 45px; font-family: Verdana">
 			&nbsp;ATA Observation Portal
 		</div>
-		<div style="position: fixed; left: 0%; top: 10%; background-image: linear-gradient(to bottom, #444499, #5a5a99); width: 95%; height: 85%; overflow-y: scroll;" id="obslist">
+		<div style="position: fixed; left: 0%; top: 10%; background-image: linear-gradient(to bottom, #444499, #6a6aa9); width: 95%; height: 85%; overflow-y: scroll;" id="obslist">
 
 		</div>
 
@@ -52,11 +52,19 @@
 			</select>
 		</div>
 
+		<iframe id="ATA" style="position: fixed; left:70%; top: 60%; border: none" src='/images/ata.jpg' onload="resizeIframe(this)">
+		</iframe>
+
 	</body>
 
 	<script>
+		function resizeIframe(obj) {
+                	obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+                	obj.style.width = obj.contentWindow.document.documentElement.scrollWidth + 'px';
+        	}
 		function createObsList(obslist){
         	obslist = obslist.split(",");
+		obslist.sort().reverse()
         	var obscontainer = document.getElementById("obslist")
         	obscontainer.innerHTML = ''
         	for (var i = 0; i < obslist.length; i++){
@@ -65,7 +73,7 @@
         		}
         		var obsname = obslist[i].split("|")[0]
         		var sname = obslist[i].split("|")[1]
-        		var obs_href = "<a href='/obs?obs=" + obsname + "&source=" + sname + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: 0%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 10%; padding: 10px; font-size: 20px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
+        		var obs_href = "<a href='/obs?obs=" + obsname + "&source=" + sname + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; padding: 10px; font-size: 20px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
         		obscontainer.innerHTML += obs_href
         	}
 		}

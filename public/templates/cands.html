@@ -56,6 +56,10 @@
 		if (this.readyState == 4 && this.status == 200){
 			var dirlisting = this.responseText.split(",")
 			for (var i = 0; i < dirlisting.length; i++){
+				if (dirlisting[i] == ''){
+					continue
+				}
+				console.log(dirlisting[i])
 				filesdiv.innerHTML += dirlisting[i] + "<br>"
 				filesdiv.innerHTML += "<iframe style='position: relative; display: initial; left: 0%;' src=/fetchcand?obs=" + obs + "&file=" + dirlisting[i] + " onload='resizeIframe(this, 1)'></iframe><br>"
 				setTimeout(function(){}, 100)

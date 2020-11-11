@@ -6,17 +6,17 @@ const {URLSearchParams} = require('url')
 const app = express()
 const port = 80
 
-const parent_stem = ''
-const parent_obs_dir = ''
-const parent_database_dir = ''
+const parent_stem = '/mnt/datay-netStorage-40G/'
+const parent_obs_dir = '/mnt/datay-netStorage-40G/tmp_copying_obs/'
+const parent_database_dir = '/home/gurmehar/obs_database/'
 
 const db_file = 'header_info.db'
 
 //app.use(express.static('static'))
 app.use(express.static('public'));
 
-const user = "";
-const password = "";
+const user = "gurmehar";
+const password = "rsg_gsingh";
 const host = "127.0.0.1"
 
 app.get('/obslist', (req, res) => {
