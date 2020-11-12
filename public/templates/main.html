@@ -58,6 +58,10 @@
 	</body>
 
 	<script>
+		var url = window.location.search
+                urlParams = new URLSearchParams(url);
+                table = urlParams.get("table")
+		
 		function resizeIframe(obj) {
                 	obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
                 	obj.style.width = obj.contentWindow.document.documentElement.scrollWidth + 'px';
@@ -73,7 +77,7 @@
         		}
         		var obsname = obslist[i].split("|")[0]
         		var sname = obslist[i].split("|")[1]
-        		var obs_href = "<a href='/obs?obs=" + obsname + "&source=" + sname + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; padding: 10px; font-size: 20px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
+        		var obs_href = "<a href='/obs?obs=" + obsname + "&source=" + sname + "&table=" + table + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; padding: 10px; font-size: 20px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
         		obscontainer.innerHTML += obs_href
         	}
 		}
@@ -116,8 +120,12 @@
 			}		
 		}
 
+		if (table == undefined){
+			table = 'obs_details'
+		}
+
 		var req = new XMLHttpRequest;
-		req.open("GET", "/obslist")
+		req.open("GET", "/obslist?table=" + table)
         req.send()
         req.onreadystatechange = function(){
         	if (this.readyState == 4 && this.status == 200){

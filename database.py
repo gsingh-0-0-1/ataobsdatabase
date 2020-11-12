@@ -183,9 +183,10 @@ for obs in obs_list:
 			fsize = os.path.getsize(obs_f_dir + "/" + file) - sys.getsizeof(f.header)
 			samples = round(fsize / (f.header['nchans'] * (f.header['nbits'] / 8)))
 			obs_time = samples * sampling_time
-
-			print("\t\t|OBS TIME: " + str(obs_time) + "s")
-
+                        print("\t\t|OBS TIME: " + str(obs_time) + "s")
+                        plot_w_log = False
+                        if (f.header['nbits'] == 32):
+                            plot_w_log = True
 
 			for tstamp in range(0, int(float(obs_time)), time_break_interval):
 				try:
@@ -194,7 +195,7 @@ for obs in obs_list:
 
 					f = Waterfall(obs_f_dir + "/" + file, t_start=start, t_stop=stop)
 
-					f.plot_waterfall(logged=False)
+					f.plot_waterfall(logged = plot_w_log)
 
 					#modify the yticks appropriately
 					plt.yticks(np.arange(0, time_break_interval, 5), np.arange(0, time_break_interval, 5) + tstamp)
@@ -204,7 +205,7 @@ for obs in obs_list:
 
 
 					#plot the spectrum
-					f.plot_spectrum()
+					f.plot_spectrum(logged = plot_w_log)
 
 					plt.savefig(f_dir + "/" + file + '_spectrum_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
 					plt.clf()

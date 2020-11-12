@@ -18,28 +18,10 @@ else:
 
 time_break_interval = 60
 
-print("Enter parent stem directory - the directory which contains the folder of all observations: ")
-parent_stem = input("Leave blank to autoset to /Volumes/SETI_DATA/ : ")
-
-if parent_stem == '':
-	parent_stem = "/Volumes/SETI_DATA/"
+obs_dir = input("Enter the folder in which the observations are stored: ")
 
 print()
-print("Enter the subfolder in which the observations are stored: ")
-obs_dir = input("Leave blank to autoset to new_obs/ : ")
-
-if obs_dir == '':
-	obs_dir = "new_obs/"
-
-print()
-print("Enter the folder for the database: ")
-database_dir = input("Leave blank to autoset to obs_database/ in the same dir as the obs folder : ")
-if database_dir == '':
-	database_dir = parent_stem + "obs_database/"
-
-print("Scanning parent directory...")
-
-obs_list = [f.path.split("/")[-1] for f in os.scandir(parent_stem + obs_dir) if f.is_dir()]
+database_dir = input("Enter the folder for the database: ")
 
 print("Initializing database directory...")
 
@@ -60,10 +42,75 @@ if dosql:
 
 print("Scanning observation directories...")
 
-for obs in obs_list:
-	#check/conditionally make directories for each obs
-	if os.path.isdir(database_dir + obs): 
-		pass
-	else: 
-		os.mkdir(database_dir + obs)
+f = open("arfiles.listing", "wb")
 
+find_ar = subprocess.run(["find", obs_dir, "-type", "f", "-name", "*.ar"], stdout=subprocess.PIPE)
+
+f.write(find_ar.stdout)
+f.close()
+
+f = open("arfiles.listing", "r")
+arfile_list = f.read().split("\n")
+f.close()
+
+#subprocess.run(['source', '/home/obsuser/.bashrc'])
+
+subprocess.Popen(["source", "/home/obsuser/.bashrc"], shell=True)
+
+for arfile in arfile_list:
+    thisfile_p_dir = "/".join(arfile.split("/")[:-1])
+    print(thisfile_p_dir)
+    if not os.path.isdir(thisfile_p_dir.replace(obs_dir, database_dir)):
+        os.makedirs(thisfile_p_dir.replace(obs_dir, database_dir), exist_ok=True)
+
+    if (1==1):
+        antennalist = ['1a', '1c', '1f', '1k', '2a', '2h', '4g', '4j', '5c']
+        obsdir = "/".join(thisfile_p_dir.split("/")[:-1])
+        print(obsdir)
+        for antenna in antennalist:
+            try:
+                f = open(obsdir + "/" + antenna + "/obs.header")
+                f = f.read()
+                break
+            except FileNotFoundError:
+                pass
+
+        f = f.split('\n')
+        f = [re.sub("\s+", ",", line.strip()) for line in f]
+        
+        for line in f:
+            elements = line.split(",")
+            if "SOURCE" in line:
+                source = elements[1]
+            if "UTC_START" in line:
+                utc = elements[1]
+                
+        time = utc.split("-")[-1]
+        date = utc.replace(time, '')[:-1]
+
+        obs = date + "-" + time
+
+
+    if "ar_sql.written" not in os.listdir(thisfile_p_dir.replace(obs_dir, database_dir)):
+        command = '''insert ignore into pulsar_obs_details (obs_name, source, date, time) values
+        ("''' + obs + '''", "''' + source + '''", "''' + date + '''", "''' + time + '''")'''
+
+        cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database='obs_info')
+
+        cnx.cursor().execute(command)
+        cnx.commit()
+        cnx.close()
+
+        f = open(thisfile_p_dir.replace(obs_dir, database_dir) + "/ar_sql.written", "w")
+        f.close()
+
+    if "ar.processed" not in os.listdir(thisfile_p_dir.replace(obs_dir, database_dir)):
+
+        subfolder = thisfile_p_dir.split("/")[-1]
+
+        print(arfile)
+
+        subprocess.run(['psrplot', '-pfreq+', '-jDT', '-D' + thisfile_p_dir.replace(obs_dir, database_dir) + '/' + obs + '_' + subfolder + '.ar.png/png', arfile], stdout=sys.stdout)
+
+        f = open(thisfile_p_dir.replace(obs_dir, database_dir) + "/ar.processed", "w")
+        f.close()

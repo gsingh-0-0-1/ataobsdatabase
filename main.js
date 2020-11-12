@@ -6,10 +6,9 @@ const {URLSearchParams} = require('url')
 const app = express()
 const port = 80
 
-const parent_stem = ''
-const parent_obs_dir = ''
-const parent_database_dir = ''
-
+const parent_stem = '/mnt/datay-netStorage-40G/'
+const parent_obs_dir = '/mnt/datay-netStorage-40G/new_obs/'
+const parent_database_dir = '/home/gurmehar/obs_database/'
 //app.use(express.static('static'))
 app.use(express.static('public'));
 
@@ -19,6 +18,10 @@ const host = "127.0.0.1"
 
 app.get('/obslist', (req, res) => {
 	var files = fs.readdirSync(parent_database_dir);
+
+        var url = req.url.split("?")[1];
+        var urlParams = new URLSearchParams(url);
+	var query_table = urlParams.get("table")
 
 	var connection = mysql.createConnection({
 		host     : host,
@@ -31,16 +34,41 @@ app.get('/obslist', (req, res) => {
 
 	connection.connect()
 
-	connection.query("select obs_name, source from obs_details", function (error, results, fields) {
+	connection.query("select obs_name, source from " + query_table, function (error, results, fields) {
   		//if (error) throw error;
-  		for (var i = 0; i < results.length; i++){
-  			results_return += results[i].obs_name + "|" + results[i].source + ","
-  		}
-		res.send(results_return)
+		if (results == undefined){
+			res.send('')
+		}
+		else{
+			for (var i = 0; i < results.length; i++){
+  				results_return += results[i].obs_name + "|" + results[i].source + ","
+			}
+			res.send(results_return)
+		}
   	});
 
 	//files = files.filter(file => !file.startsWith("."))
 	//res.send(files.join(","));
+})
+
+app.get('/pulsarobslist', (req, res) => {
+	var results_return = ''
+
+	var connection = mysql.createConnection({
+                host     : host,
+                user     : user,
+                password : password,
+                database : 'obs_info'
+        });
+
+	connection.connect()
+
+	connection.query("select obs_name, source from pulsar_obs_details", function(error, results, fields){
+		for (var i = 0; i < results.length; i++){
+			results_return += results[i].obs_name + "|" + results[i].source + ","
+		}
+		res.send(results_return)
+	})
 })
 
 app.get('/obsspec', (req, res) => {
@@ -178,6 +206,7 @@ app.get('/getsourcename', (req, res) => {
 	var url = req.url.split("?")[1];
 	var urlParams = new URLSearchParams(url);
 	var obs = urlParams.get("obs")
+	var table = urlParams.get("table")
 	if (obs == ''){
 		res.send("")
 		return ''
@@ -192,7 +221,7 @@ app.get('/getsourcename', (req, res) => {
 
 	var results_return = ''
 
-	connection.query("select source from obs_details where obs_name = '" + obs + "'", function(error, results, fields){
+	connection.query("select source from " + table + " where obs_name = '" + obs + "'", function(error, results, fields){
 		if (results == undefined){
 			res.send("")
 		}		

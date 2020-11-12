@@ -93,8 +93,9 @@
 		var url = window.location.search
 		var urlParams = new URLSearchParams(url);
 		var obs = urlParams.get("obs");
+		var table = urlParams.get("table");
 		var sname = new XMLHttpRequest;
-		sname.open("GET", "/getsourcename?obs=" + obs)
+		sname.open("GET", "/getsourcename?obs=" + obs + "&table=" + table)
 		sname.send();
 		sname.onreadystatechange = function(){
 			if (this.readyState == 4 && this.status == 200){
