@@ -183,10 +183,10 @@ for obs in obs_list:
 			fsize = os.path.getsize(obs_f_dir + "/" + file) - sys.getsizeof(f.header)
 			samples = round(fsize / (f.header['nchans'] * (f.header['nbits'] / 8)))
 			obs_time = samples * sampling_time
-                        print("\t\t|OBS TIME: " + str(obs_time) + "s")
-                        plot_w_log = False
-                        if (f.header['nbits'] == 32):
-                            plot_w_log = True
+			print("\t\t|OBS TIME: " + str(obs_time) + "s")
+			plot_w_log = False
+			if (f.header['nbits'] == 32):
+				plot_w_log = True
 
 			for tstamp in range(0, int(float(obs_time)), time_break_interval):
 				try:
