@@ -55,6 +55,9 @@
 		<iframe id="ATA" style="position: fixed; left:70%; top: 60%; border: none" src='/images/ata.jpg' onload="resizeIframe(this)">
 		</iframe>
 
+		<div style="position: fixed; top: 15%; left: 55%" id="obs_switch">
+		</div>
+
 	</body>
 
 	<script>
@@ -123,6 +126,17 @@
 		if (table == undefined){
 			table = 'obs_details'
 		}
+
+		if (table == 'obs_details'){
+			var table_switch = 'pulsar_obs_details'
+			var table_switch_formatted = "View Pulsar Observations >>"
+		}
+		else if (table == 'pulsar_obs_details'){
+			var table_switch = 'obs_details'
+			var table_switch_formatted = "View All Observations >>"
+		}
+
+		document.getElementById("obs_switch").innerHTML = "<a href='/?table=" + table_switch + "'>" + table_switch_formatted + "</a>"
 
 		var req = new XMLHttpRequest;
 		req.open("GET", "/obslist?table=" + table)

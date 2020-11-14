@@ -110,7 +110,12 @@ for arfile in arfile_list:
 
         print(arfile)
 
-        subprocess.run(['psrplot', '-pfreq+', '-jDT', '-D' + thisfile_p_dir.replace(obs_dir, database_dir) + '/' + obs + '_' + subfolder + '.ar.png/png', arfile], stdout=sys.stdout)
+        savepath = thisfile_p_dir.replace(obs_dir, database_dir).replace(subfolder, 'ar_images')
+
+        if not os.path.isdir(savepath):
+            os.mkdir(savepath)
+
+        subprocess.run(['psrplot', '-pfreq+', '-jDT', '-D' + savepath + '/' + obs + '_' + subfolder + '.ar.png/png', arfile], stdout=sys.stdout)
 
         f = open(thisfile_p_dir.replace(obs_dir, database_dir) + "/ar.processed", "w")
         f.close()
