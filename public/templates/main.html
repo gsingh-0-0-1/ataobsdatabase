@@ -55,7 +55,7 @@
 		<iframe id="ATA" style="position: fixed; left:70%; top: 60%; border: none" src='/images/ata.jpg' onload="resizeIframe(this)">
 		</iframe>
 
-		<div style="position: fixed; top: 15%; left: 55%" id="obs_switch">
+		<div style="position: fixed; top: 15%; left: 50%; font-family: Verdana; font-size: 15px; color: #aaa; text-decoration: none;" id="obs_switch">
 		</div>
 
 	</body>
@@ -64,7 +64,18 @@
 		var url = window.location.search
                 urlParams = new URLSearchParams(url);
                 table = urlParams.get("table")
-		
+	
+                if (table == undefined){
+                        table = 'obs_details'
+                }
+
+		if (table == 'obs_details)'){
+			var obs_type = 'obs'
+		}
+		else if (table == 'pulsar_obs_details'){
+			var obs_type = 'pulsarobs'
+		}
+
 		function resizeIframe(obj) {
                 	obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
                 	obj.style.width = obj.contentWindow.document.documentElement.scrollWidth + 'px';
@@ -80,7 +91,7 @@
         		}
         		var obsname = obslist[i].split("|")[0]
         		var sname = obslist[i].split("|")[1]
-        		var obs_href = "<a href='/obs?obs=" + obsname + "&source=" + sname + "&table=" + table + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; padding: 10px; font-size: 20px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
+        		var obs_href = "<a href='/" + obs_type + "?obs=" + obsname + "&source=" + sname + "&table=" + table + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; padding: 10px; font-size: 20px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
         		obscontainer.innerHTML += obs_href
         	}
 		}
@@ -123,10 +134,6 @@
 			}		
 		}
 
-		if (table == undefined){
-			table = 'obs_details'
-		}
-
 		if (table == 'obs_details'){
 			var table_switch = 'pulsar_obs_details'
 			var table_switch_formatted = "View Pulsar Observations >>"
@@ -136,7 +143,7 @@
 			var table_switch_formatted = "View All Observations >>"
 		}
 
-		document.getElementById("obs_switch").innerHTML = "<a href='/?table=" + table_switch + "'>" + table_switch_formatted + "</a>"
+		document.getElementById("obs_switch").innerHTML = "<a style='text-decoration: none; color: #aaa' href='/?table=" + table_switch + "'>" + table_switch_formatted + "</a>"
 
 		var req = new XMLHttpRequest;
 		req.open("GET", "/obslist?table=" + table)
