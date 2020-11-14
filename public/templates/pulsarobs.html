@@ -18,6 +18,11 @@
 
 		</div>
 
+        	<div id="source_text" style="position: sticky; left: 80%; top: 0; background-color: #888; width: 15%; height: 6%; padding: 10px 0; transform: translate(0%, 0); color: #ddd; text-align: center; font-size: 30px; font-family: Verdana; z-index: 2">
+
+	        </div>
+
+
 		<div id="top_spacer_2" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
                 	<br><br><br>
 		</div>
@@ -45,7 +50,17 @@
 	var source = urlParams.get("source");
 
         document.getElementById("top_text").innerHTML = obs + " | " + source
-	
+
+        var source = new XMLHttpRequest;
+        source.open("GET", "/getsourcename?obs=" + obs + "&table=pulsar_obs_details");
+        source.send();
+        source.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                        var sourcename = this.responseText;
+                        document.getElementById("source_text").innerHTML = sourcename.replaceAll(",", "")
+                }
+        }
+
 	var files_req = new XMLHttpRequest;
 	files_req.open("GET", "/arfiles?obs=" + obs)
 	files_req.send()

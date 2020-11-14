@@ -17,6 +17,11 @@
 	<div id="top_text" style="position: sticky; left: 50%; top: 0; background-color: #888; width: 50%; height: 10%; padding: 10px 0; transform: translate(-50%, 0); color: #ddd; text-align: center; font-size: 30px; font-family: Verdana; z-index: 2">
 		
 	</div>
+	
+	<div id="source_text" style="position: sticky; left: 80%; top: 0; background-color: #888; width: 15%; height: 10%; padding: 10px 0; transform: translate(0%, 0); color: #ddd; text-align: center; font-size: 30px; font-family: Verdana; z-index: 2">
+
+        </div>
+
 
 	<div id="top_spacer_2" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
 		<br><br><br>
@@ -47,6 +52,16 @@
 	var folder = urlParams.get("folder")
 	var plot_spec = urlParams.get("plot_spec")
 	var desc = ''
+
+	var source = new XMLHttpRequest;
+	source.open("GET", "/getsourcename?obs=" + obs + "&table=obs_details");
+	source.send();
+	source.onreadystatechange = function(){
+		if (this.readyState == 4 && this.status == 200){
+			var sourcename = this.responseText;
+			document.getElementById("source_text").innerHTML = sourcename.replaceAll(",", "")
+		}
+	}
 
 	if (urlParams.get("ics") == "a" || urlParams.get("ics") == "b"){
 		var desc = "_" + urlParams.get("ics")
@@ -90,10 +105,10 @@
 			console.log(time_diff)
 
 			for (var time = 0; time < time_diff * dirlisting.length; time += time_diff){
-				var element = dirlisting.filter(item => (item.includes(String(time)) && item.includes(String(time + time_diff))))
-				console.log(element)
+				var element = dirlisting.filter(item => (item.includes("_"+String(time)+"s") && item.includes("_"+String(time + time_diff)+"s")))
 				for (var el = 0; el < element.length; el++){
 					if (element[el] != undefined){
+						console.log(element[el])
 						corrected_listing.push(element[el])
 					}
 				}
@@ -102,6 +117,8 @@
 			console.log(corrected_listing)
 
 			dirlisting = corrected_listing
+
+			console.log(dirlisting)
 
 			for (var i = 0; i < dirlisting.length; i++){
 				filesdiv.innerHTML += dirlisting[i] + "<br>"
@@ -113,7 +130,7 @@
 
 	var hrefstyle = "style='text-decoration:none;'"
 
-	document.getElementById("obs_return").innerHTML = "<a " + hrefstyle + " href=/obs?obs=" + obs + "><- Back to obs</a>"
+	document.getElementById("obs_return").innerHTML = "<a " + hrefstyle + " href=/obs?obs=" + obs + "&table=obs_details><- Back to obs</a>"
 
 	var current_url = window.location.search
 

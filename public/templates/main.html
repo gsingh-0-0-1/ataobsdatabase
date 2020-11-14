@@ -73,7 +73,7 @@
 		<iframe id="ATA" style="position: fixed; left:70%; top: 60%; border: none" src='/images/ata.jpg' onload="resizeIframe(this)">
 		</iframe>
 
-		<div style="position: fixed; top: 15%; left: 50%; font-family: Verdana; font-size: 15px; color: #aaa; text-decoration: none;" id="obs_switch">
+		<div style="position: fixed; top: 15%; left: 45%; font-family: Verdana; font-size: 15px; color: #aaa; text-decoration: none;" id="obs_switch">
 		</div>
 
 	</body>
@@ -165,7 +165,7 @@
 			var table_switch_formatted = "View All Observations >>"
 		}
 
-		document.getElementById("obs_switch").innerHTML = "<a style='text-decoration: none; color: #aaa' href='/?table=" + table_switch + "'>" + table_switch_formatted + "</a>"
+		document.getElementById("obs_switch").innerHTML = "<a style='background-color: #aaa; color: #222; position: fixed; margin-top: 2%; height 5%; text-align: center; padding: 10px 15px; font-size: 15px; font-family: Verdana' href='/?table=" + table_switch + "'>" + table_switch_formatted + "</a>"
 
 		var req = new XMLHttpRequest;
 		req.open("GET", "/obslist?table=" + table)
