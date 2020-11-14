@@ -1,0 +1,71 @@
+<html>
+	<head>
+		<title>ATA Obs Portal
+		</title>
+		<style>
+			body {
+				background-color: #123456;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="top_spacer" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
+                	<br><br><br>
+		</div>	
+
+		<div id="top_text" style="position: sticky; left: 50%; top: 0; background-color: #888; width: 50%; height: 6%; padding: 10px 0; transform: translate(-50%, 0); color: #ddd; text-align: center; font-size: 30px; font-family: Verdana; z-index: 2">
+
+		</div>
+
+		<div id="top_spacer_2" style="position: relative; left: 50%; top: 0; background-color: rgba(0, 0, 0, 0); width: 30%; height: 10%; transform: translate(-50%, 0);">
+                	<br><br><br>
+		</div>
+
+		<div id="files" style="position: relative; left: 0; top: 0; color: #fff; font-family: Verdana; font-size: 15px; overflow-y: scroll; font-family: Verdana; font-size: 20px; text-align: center">
+		</div>
+
+	        <div id="obs_return" style="position: fixed; background-color: #888; left: 10%; top: 5%; font-family: Verdana; font-size: 20px; transform: translate(-50%, 0%); padding: 10px 10px">
+        	</div>
+
+		<div id="coloring" style="position: fixed; left: 0%; top: 0%; width: 100%; height: 100%; background-image: linear-gradient(to bottom, #123456, #507090); z-index: -1">
+
+		</div>
+	</body>
+
+	<script>
+	function resizeIframe(obj) {
+                obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+                obj.style.width = obj.contentWindow.document.documentElement.scrollWidth + 'px';
+        }
+
+        var url = window.location.search
+        var urlParams = new URLSearchParams(url);
+        var obs = urlParams.get("obs");
+	var source = urlParams.get("source");
+
+        document.getElementById("top_text").innerHTML = obs + " | " + source
+	
+	var files_req = new XMLHttpRequest;
+	files_req.open("GET", "/arfiles?obs=" + obs)
+	files_req.send()
+	files_req.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200){
+			var arfiles_list = this.responseText
+			arfiles_list = arfiles_list.split(",")
+			for (var item = 0; item < arfiles_list.length; item++){
+				var file = arfiles_list[item];
+				var folder = file.split("_")[1].split(".")[0]
+				document.getElementById("files").innerHTML += obs + " | " + folder + "<br>"
+				document.getElementById("files").innerHTML += "<iframe style='position: relative; display: inline-block; left: 0%; transform: translate(0%, 0)' src=/fetchimage?path=" + obs + "/ar_images/" + file + " onload='resizeIframe(this)'></iframe><br>"
+				setTimeout(function(){}, 100)
+			}
+		}
+	}
+
+	var hrefstyle = "style='text-decoration:none;'"
+
+	document.getElementById("obs_return").innerHTML = "<a " + hrefstyle + " href=/?table=pulsar_obs_details><- Back to home</a>"
+
+	</script>
+</html>

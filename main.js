@@ -12,8 +12,8 @@ const parent_database_dir = '/home/gurmehar/obs_database/'
 //app.use(express.static('static'))
 app.use(express.static('public'));
 
-const user = "gurmehar";
-const password = "rsg_gsingh";
+const user = "";
+const password = "";
 const host = "127.0.0.1"
 
 app.get('/obslist', (req, res) => {
