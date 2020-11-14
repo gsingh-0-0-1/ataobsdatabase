@@ -30,7 +30,7 @@
 		<div id="coloring" style="position: fixed; top: 0; left: 0; z-index: -1; background-image: linear-gradient(to bottom, #123456, #507090); width: 100%; height: 100%;">
 		</div>
 
-		<div style="position: fixed; left: 3%: top: 2%; color: #888; font-size: 45px; font-family: Verdana">
+		<div id="bigtext_title" style="position: fixed; left: 3%: top: 2%; color: #888; font-size: 45px; font-family: Verdana">
 			&nbsp;ATA Observation Portal
 		</div>
 		<div style="position: fixed; left: 0%; top: 10%; background-image: linear-gradient(to bottom, #444499, #6a6aa9); width: 95%; height: 85%; overflow-y: scroll;" id="obslist">
@@ -69,11 +69,15 @@
                         table = 'obs_details'
                 }
 
-		if (table == 'obs_details)'){
-			var obs_type = 'obs'
+		var obs_type = ''
+
+		if (table == 'obs_details'){
+			obs_type = 'obs'
+			document.getElementById("bigtext_title").innerHTML += " | All Obs"
 		}
 		else if (table == 'pulsar_obs_details'){
-			var obs_type = 'pulsarobs'
+			obs_type = 'pulsarobs'
+			document.getElementById("bigtext_title").innerHTML += " | Pulsar Obs"
 		}
 
 		function resizeIframe(obj) {

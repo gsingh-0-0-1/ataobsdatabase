@@ -117,5 +117,11 @@ for arfile in arfile_list:
 
         subprocess.run(['psrplot', '-pfreq+', '-jDT', '-D' + savepath + '/' + obs + '_' + subfolder + '.ar.png/png', arfile], stdout=sys.stdout)
 
+        #img = Image.open(savepath + "/" + obs + "_" + subfolder + ".ar.png")
+
+        #img = img.resize((int(img.size[0]/2), int(img.size[1]/2)))
+
+        #img.save(savepath + "/" + obs + "_" + subfolder + ".ar.png")
+
         f = open(thisfile_p_dir.replace(obs_dir, database_dir) + "/ar.processed", "w")
         f.close()

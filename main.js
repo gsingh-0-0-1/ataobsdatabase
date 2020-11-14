@@ -234,6 +234,14 @@ app.get('/getsourcename', (req, res) => {
 	})
 })
 
+app.get('/arfiles', (req, res) => {
+	var url = req.url.split("?")[1];
+        var urlParams = new URLSearchParams(url);
+        var obs = urlParams.get("obs")
+	var files = fs.readdirSync(parent_database_dir + obs + "/ar_images")
+	res.send(files.join(","))
+})
+
 app.get('/', (req, res) => {
 	res.sendFile('public/templates/main.html', {root: __dirname})
 })
@@ -244,6 +252,10 @@ app.get('/obssearch', (req, res) => {
 
 app.get('/obs', (req, res) => {
 	res.sendFile('/public/templates/obs_landing.html', {root: __dirname})
+})
+
+app.get('/pulsarobs', (req, res) => {
+	res.sendFile('public/templates/pulsarobs.html', {root: __dirname})
 })
 
 app.get('/viewdata', (req, res) => {
