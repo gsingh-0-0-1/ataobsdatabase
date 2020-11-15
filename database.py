@@ -19,24 +19,37 @@ else:
 
 time_break_interval = 60
 
-print("Enter parent stem directory - the directory which contains the folder of all observations: ")
-parent_stem = input("Leave blank to autoset to /Volumes/SETI_DATA/ : ")
+config = input("Would you like to initialize from a config file? (y/n) : ")
 
-if parent_stem == '':
-	parent_stem = "/Volumes/SETI_DATA/"
+if config != 'y': config = False
+if config == 'y': config = True
 
-print()
-print("Enter the subfolder in which the observations are stored: ")
-obs_dir = input("Leave blank to autoset to new_obs/ : ")
+if config:
+    init_info = open("config.txt", "r")
+    init_info = init_info.read()
+    init_info = init_info.split("\n")
+    parent_stem = init_info[0]
+    obs_dir = init_info[1]
+    database_dir = init_info[2]
+else:
+    print("Enter parent stem directory - the directory which contains the folder of all observations: ")
+    parent_stem = input("Leave blank to autoset to /Volumes/SETI_DATA/ : ")
+    
+    if parent_stem == '':
+        parent_stem = "/Volumes/SETI_DATA/"
 
-if obs_dir == '':
-	obs_dir = "new_obs/"
+    print()
+    print("Enter the subfolder in which the observations are stored: ")
+    obs_dir = input("Leave blank to autoset to new_obs/ : ")
 
-print()
-print("Enter the folder for the database: ")
-database_dir = input("Leave blank to autoset to obs_database/ in the same dir as the obs folder : ")
-if database_dir == '':
-	database_dir = parent_stem + "obs_database/"
+    if obs_dir == '':
+        obs_dir = "new_obs/"
+
+    print()
+    print("Enter the folder for the database: ")
+    database_dir = input("Leave blank to autoset to obs_database/ in the same dir as the obs folder : ")
+    if database_dir == '':
+        database_dir = parent_stem + "obs_database/"
 
 print("Scanning parent directory...")
 
