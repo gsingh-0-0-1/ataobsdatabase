@@ -12,9 +12,11 @@ const parent_database_dir = '/home/gurmehar/obs_database/'
 //app.use(express.static('static'))
 app.use(express.static('public'));
 
-const user = "";
-const password = "";
+const user = process.argv[2];
+const password = process.argv[3];
 const host = "127.0.0.1"
+
+console.log(user, password)
 
 app.get('/obslist', (req, res) => {
 	var files = fs.readdirSync(parent_database_dir);
@@ -148,59 +150,81 @@ app.get('/querybydate', (req, res) => {
 	var url = req.url.split("?")[1];
 	var urlParams = new URLSearchParams(url);
 	var date = urlParams.get("date")
+	var table = urlParams.get("table")
+	if (table != "obs_details" && table != "pulsar_obs_details"){
+		res.send('')
+		return ;
+	}
 	if (date == ''){
 		res.send("")
 		return ''
 	}
-
-	//verify date format
-
-
 	var comparison = urlParams.get("comp")
-
-	var connection = mysql.createConnection({
-		host     : host,
-		user     : user,
-		password : password,
-		database : 'obs_info'
-	});
-
+	var connection = mysql.createConnection({host: host, user: user, password: password, database: 'obs_info'});
 	var results_return = ''
 
 	connection.connect()
 
-	if (comparison == "on"){
-		connection.query("select obs_name, source from obs_details where date LIKE '%" + date + "%'", function(error, results, fields){
-			//if (error) throw error;
-			for (var i = 0; i < results.length; i++){
-				results_return += results[i].obs_name + "|" + results[i].source + ","
-			}
-			res.send(results_return)
-		})
-	}
-	else{
-		if (comparison == "after"){
-			comp_op = ">"
-		}
-		if (comparison == "before"){
-			comp_op = "<"
-		}
-		connection.query("select obs_name, source from obs_details where date " + comp_op + " '" + date + "'", function(error, results, fields){
-			//if (error) throw error;
-			if (results == undefined){
-				res.send("")
-			}
-			else{
-				for (var i = 0; i < results.length; i++){
-					results_return += results[i].obs_name + "|" + results[i].source + ","
-				}
-				res.send(results_return)
-			}
-		})
-	}
+	var query = 'select obs_name, source from ' + table + " where date "
 
-	connection.end()
+	if (comparison == "on"){ query += "LIKE '%" + date + "%' "}
+	else if (comparison == "after"){ query += "< '" + date + "' "}
+	else if (comparison == "before"){ query += "> '" + date + "' "}
+	else{ res.send(""); return ;}
+
+	connection.query(query, function(error, results, fields){
+		if (results == undefined){
+			res.send('')
+			return ;
+		}
+		for (var i = 0; i < results.length; i++){
+			results_return += results[i].obs_name + "|" + results[i].source + ","
+		}
+		res.send(results_return)
+	})
 })
+
+
+app.get('/fullinpquery', (req, res) => {
+        var url = req.url.split("?")[1];
+        var urlParams = new URLSearchParams(url);
+        var date_inp = urlParams.get("date")
+	var source = urlParams.get("source")
+        var table = urlParams.get("table")
+	var comparison = urlParams.get("comp")
+	if (table != "obs_details" && table != "pulsar_obs_details"){
+                res.send('')
+                return ;
+        }
+        if (date_inp == ''){
+                comparison = "on"
+        }
+        var connection = mysql.createConnection({host: host, user: user, password: password, database: 'obs_info'});
+        var results_return = ''
+
+        connection.connect()
+
+        var query = 'select obs_name, source from ' + table + " where date "
+
+        if (comparison == "on"){ query += "LIKE '%" + date_inp + "%' "}
+        else if (comparison == "after"){ query += "> '" + date_inp + "' "}
+        else if (comparison == "before"){ query += "< '" + date_inp + "' "}
+        else{ res.send(""); return ;}
+
+	query += "and source LIKE '%" + source + "%'"
+
+        connection.query(query, function(error, results, fields){
+                if (results == undefined){
+                        res.send('')
+                        return ;
+                }
+                for (var i = 0; i < results.length; i++){
+                        results_return += results[i].obs_name + "|" + results[i].source + ","
+                }
+                res.send(results_return)
+        })
+})
+
 
 app.get('/getsourcename', (req, res) => {
 	var url = req.url.split("?")[1];
