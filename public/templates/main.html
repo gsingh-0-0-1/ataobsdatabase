@@ -131,7 +131,7 @@
 			date_inp = date_inp.replaceAll(" ", "")
 			var comp = document.getElementById('datecomp').value
 			var req = new XMLHttpRequest;
-			req.open("GET", "/fullinpquery?table=" + table + "&source=" + sourcename + "&date=" + date_inp + "&comp=" + comp);
+			req.open("GET", "/fullinpquery?table=" + table + "&source=" + sourcename.replace("+", "_") + "&date=" + date_inp + "&comp=" + comp);
 			req.send()
 			req.onreadystatechange = function(){
 				if (this.readyState == 4 && this.status == 200){

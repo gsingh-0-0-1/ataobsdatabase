@@ -189,7 +189,7 @@ app.get('/fullinpquery', (req, res) => {
         var url = req.url.split("?")[1];
         var urlParams = new URLSearchParams(url);
         var date_inp = urlParams.get("date")
-	var source = urlParams.get("source")
+	var source = urlParams.get("source").replace("_", "+")
         var table = urlParams.get("table")
 	var comparison = urlParams.get("comp")
 	if (table != "obs_details" && table != "pulsar_obs_details"){
@@ -288,6 +288,12 @@ app.get('/viewdata', (req, res) => {
 
 app.get('/cands', (req, res) => {
 	res.sendFile('public/templates/cands.html', {root: __dirname})
+})
+
+app.get('/*', (req, res) => {
+	const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	console.log(new Date(new Date().toUTCString()), ip)
+        res.send('')
 })
 
 app.listen(port, '0.0.0.0')
