@@ -216,6 +216,7 @@ for obs in obs_list:
 					plt.savefig(f_dir + "/" + file + '_waterfall_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
 					plt.clf()
 
+					print(f_dir + "/" + file + '_waterfall_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
 
 					#plot the spectrum
 					f.plot_spectrum(logged = plot_w_log)
@@ -223,6 +224,7 @@ for obs in obs_list:
 					plt.savefig(f_dir + "/" + file + '_spectrum_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
 					plt.clf()
 
+					print(f_dir + "/" + file + '_spectrum_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
 
 					#plot the timeseries
 					f.plot_time_series()
@@ -232,6 +234,9 @@ for obs in obs_list:
 
 					plt.savefig(f_dir + "/" + file + '_timeseries_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
 					plt.clf()
+
+					print(f_dir + "/" + file + '_timeseries_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
+
 				except (IndexError, NotImplementedError) as e:
 					f = open("obs.flagged", "a")
 					f.write(obs + "/" + subd + "/" + file + "\n")
