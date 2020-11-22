@@ -25,7 +25,8 @@ if config != 'y': config = False
 if config == 'y': config = True
 
 if config:
-    init_info = open("config.txt", "r")
+    config_fname = input("Enter config filename (with extension): ")
+    init_info = open(config_fname, "r")
     init_info = init_info.read()
     init_info = init_info.split("\n")
     parent_stem = init_info[0]
@@ -183,7 +184,7 @@ for obs in obs_list:
 			#get the sampling time
 			try:
 				f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1)
-			except NotImplementedError:
+			except (NotImplementedError, IndexError) as e:
                                 print("Flagging " + obs + "...")
                                 f = open("obs.flagged", "a")
                                 f.write(obs + "/" + subd + "/" + file + "\n")
