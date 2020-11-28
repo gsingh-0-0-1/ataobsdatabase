@@ -130,7 +130,7 @@
         			}
 
 				if (i == stop){
-					var loadbutton = "<input id='obsloadbutton' type='button' value='Load more obsevations' onclick='javascript:createObsList(obs_here, " + stop + ", " + (stop+100) + ", reset=false)'>"
+					var loadbutton = "<a id='obsloadbutton' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; text-align: left; padding: 10px; font-size: 20px; font-family: Verdana' class='button' href='javascript:createObsList(obs_here, " + stop + ", " + (stop+100) + ", reset=false)'>Load more observations</a>"
 					obscontainer.innerHTML += loadbutton.replace("obs_here", '"' + obslist_orig +  '"')
 					//console.log(loadbutton)
 					break
