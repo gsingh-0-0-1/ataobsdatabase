@@ -156,7 +156,8 @@
 			req.onreadystatechange = function(){
 				if (this.readyState == 4 && this.status == 200){
 					var obslist = this.responseText
-					createObsList(obslist)
+					console.log(obslist)
+					createObsList(obslist, 0, 100)
 				}
 			}
 		}
