@@ -25,32 +25,32 @@ if config != 'y': config = False
 if config == 'y': config = True
 
 if config:
-    config_fname = input("Enter config filename (with extension): ")
-    init_info = open(config_fname, "r")
-    init_info = init_info.read()
-    init_info = init_info.split("\n")
-    parent_stem = init_info[0]
-    obs_dir = init_info[1]
-    database_dir = init_info[2]
+	config_fname = input("Enter config filename (with extension): ")
+	init_info = open(config_fname, "r")
+	init_info = init_info.read()
+	init_info = init_info.split("\n")
+	parent_stem = init_info[0]
+	obs_dir = init_info[1]
+	database_dir = init_info[2]
 else:
-    print("Enter parent stem directory - the directory which contains the folder of all observations: ")
-    parent_stem = input("Leave blank to autoset to /Volumes/SETI_DATA/ : ")
-    
-    if parent_stem == '':
-        parent_stem = "/Volumes/SETI_DATA/"
+	print("Enter parent stem directory - the directory which contains the folder of all observations: ")
+	parent_stem = input("Leave blank to autoset to /Volumes/SETI_DATA/ : ")
 
-    print()
-    print("Enter the subfolder in which the observations are stored: ")
-    obs_dir = input("Leave blank to autoset to new_obs/ : ")
+	if parent_stem == '':
+		parent_stem = "/Volumes/SETI_DATA/"
 
-    if obs_dir == '':
-        obs_dir = "new_obs/"
+	print()
+	print("Enter the subfolder in which the observations are stored: ")
+	obs_dir = input("Leave blank to autoset to new_obs/ : ")
 
-    print()
-    print("Enter the folder for the database: ")
-    database_dir = input("Leave blank to autoset to obs_database/ in the same dir as the obs folder : ")
-    if database_dir == '':
-        database_dir = parent_stem + "obs_database/"
+	if obs_dir == '':
+		obs_dir = "new_obs/"
+
+	print()
+	print("Enter the folder for the database: ")
+	database_dir = input("Leave blank to autoset to obs_database/ in the same dir as the obs folder : ")
+	if database_dir == '':
+		database_dir = parent_stem + "obs_database/"
 
 print("Scanning parent directory...")
 
@@ -67,9 +67,7 @@ else:
 dblist = os.listdir(database_dir)
 
 if dosql:
-	cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3],
-                              host='127.0.0.1',
-                              database='obs_info')
+	cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database='obs_info')
 
 	cnx.close()
 
@@ -114,13 +112,9 @@ for obs in obs_list:
 			time = utc.split("-")[-1]
 			date = utc.replace(time, '')[:-1]
 
-			command = '''insert into obs_details (obs_name, source, date, time) values
-						("''' + obs + '''", "''' + source + '''", "''' + date + '''", "''' + time + '''")
-						'''
+			command = '''insert into obs_details (obs_name, source, date, time) values ("''' + obs + '''", "''' + source + '''", "''' + date + '''", "''' + time + '''")'''
 
-			cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3],
-	                              host='127.0.0.1',
-	                              database='obs_info')
+			cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database='obs_info')
 
 			cnx.cursor().execute(command)
 
@@ -181,15 +175,24 @@ for obs in obs_list:
 
 			print("\t\t|" + file)
 
+			flag = False
+
 			#get the sampling time
 			try:
 				f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1)
 			except (NotImplementedError, IndexError) as e:
-                                print("Flagging " + obs + "...")
-                                f = open("obs.flagged", "a")
-                                f.write(obs + "/" + subd + "/" + file + "\n")
-                                f.close()
-                                continue
+				flag = True
+
+			if file[-4:len(file)] != '.fil':
+				flag = True
+
+
+			if flag:
+				print("Flagging " + obs + "...")
+				f = open("obs.flagged", "a")
+				f.write(obs + "/" + subd + "/" + file + "\n")
+				f.close()
+				continue
 
 			sampling_time = f.header['tsamp']
 
