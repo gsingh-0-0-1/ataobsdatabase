@@ -5,7 +5,7 @@
 		</title>
 
 		<style type="text/css">
-			body {background-color: #123456}
+			body {}
 			.button {
 				background-color: var(--bcolor);
 				border: none;
@@ -83,7 +83,7 @@
 
 	</body>
 
-	<script>
+	<script type="text/javascript">
 		var url = window.location.search
                 urlParams = new URLSearchParams(url);
                 table = urlParams.get("table")
@@ -107,20 +107,40 @@
                 	obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
                 	obj.style.width = obj.contentWindow.document.documentElement.scrollWidth + 'px';
         	}
-		function createObsList(obslist){
-        	obslist = obslist.split(",");
-		obslist.sort().reverse()
-        	var obscontainer = document.getElementById("obslist")
-        	obscontainer.innerHTML = ''
-        	for (var i = 0; i < obslist.length; i++){
-        		if (obslist[i] == ''){
-        			continue
+		
+		function createObsList(obslist, start, stop, reset=true){
+			obslist_orig = obslist
+        		obslist = obslist.split(",");
+			obslist.sort().reverse()
+			var obscontainer = document.getElementById("obslist")
+
+			if (reset){
+				obscontainer.innerHTML = ""
+			}
+
+                        var obsloadbutton = document.getElementById("obsloadbutton")
+                        if (obsloadbutton){
+                                obsloadbutton.remove()
+                        	//obscontainer.innerHTML = obscontainer.innerHTML.slice(0, -4)
+			}
+
+        		for (var i = start; i < obslist.length; i++){
+        			if (obslist[i] == ""){
+        				continue
+        			}
+
+				if (i == stop){
+					var loadbutton = "<a id='obsloadbutton' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; text-align: left; padding: 10px; font-size: 20px; font-family: Verdana' class='button' href='javascript:createObsList(obs_here, " + stop + ", " + (stop+100) + ", reset=false)'>Load more observations</a>"
+					obscontainer.innerHTML += loadbutton.replace("obs_here", '"' + obslist_orig +  '"')
+					//console.log(loadbutton)
+					break
+				}
+
+        			var obsname = obslist[i].split("|")[0]
+        			var sname = obslist[i].split("|")[1]
+        			var obs_href = "<a href='/" + obs_type + "?obs=" + obsname + "&source=" + sname + "&table=" + table + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; padding: 10px; font-size: 20px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
+        			obscontainer.innerHTML += obs_href
         		}
-        		var obsname = obslist[i].split("|")[0]
-        		var sname = obslist[i].split("|")[1]
-        		var obs_href = "<a href='/" + obs_type + "?obs=" + obsname + "&source=" + sname + "&table=" + table + "' style='background-color: #aaa; color: #222; display: inline-block; margin-left: -2%; margin-top: 2%; height: 4.5%; width: 40%; text-indent: 12.5%; padding: 10px; font-size: 20px; font-family: Verdana'>" + obsname + " (" + sname + ") " + " </a><br>"
-        		obscontainer.innerHTML += obs_href
-        	}
 		}
 
 		function fullInpMod(event){
@@ -136,12 +156,13 @@
 			req.onreadystatechange = function(){
 				if (this.readyState == 4 && this.status == 200){
 					var obslist = this.responseText
-					createObsList(obslist)
+					console.log(obslist)
+					createObsList(obslist, 0, 100)
 				}
 			}
 		}
 
-		function sourceMod(event){
+		/*function sourceMod(event){
 			if (event.keyCode == 13 || event.which == 13){
 			}
 			else{
@@ -180,7 +201,7 @@
 					createObsList(obslist)
 				}
 			}		
-		}
+		}*/
 
 		if (table == 'obs_details'){
 			var table_switch = 'pulsar_obs_details'
@@ -195,12 +216,13 @@
 
 		var req = new XMLHttpRequest;
 		req.open("GET", "/obslist?table=" + table)
-        req.send()
-        req.onreadystatechange = function(){
-        	if (this.readyState == 4 && this.status == 200){
-            	var obslist = this.responseText;
-            	createObsList(obslist);
-            }
-        }
+        	req.send()
+        	req.onreadystatechange = function(){
+        		if (this.readyState == 4 && this.status == 200){
+            			var obslist_resp = this.responseText;
+				obslist_resp = obslist_resp.slice(0, -1)
+            			createObsList(obslist_resp, 0, 100);
+            		}
+		}
 	</script>
 </html>
