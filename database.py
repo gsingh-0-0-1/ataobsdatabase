@@ -177,15 +177,13 @@ for obs in obs_list:
 
 			flag = False
 
-			#get the sampling time
-			try:
-				f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1)
-			except (NotImplementedError, IndexError) as e:
-				flag = True
-
 			if file[-4:len(file)] != '.fil':
 				flag = True
-
+			else:
+				try:
+					f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1)
+				except (NotImplementedError, IndexError, UnicodeDecodeError) as e:
+					flag = True
 
 			if flag:
 				print("Flagging " + obs + "...")
