@@ -138,7 +138,8 @@ for obs in obs_list:
 		obs_f_dir = parent_stem + obs_dir + obs + "/" + subd
 
 		if os.path.isdir(f_dir): 
-			if "data.written" in os.listdir(database_dir + obs + "/" + subd):
+			dir_temp = os.listdir(database_dir + obs + "/" + subd)
+			if "data.written" in dir_temp and len(dir_temp) > 5: #correction for a dumb mistake I made
 				continue
 			else:
 				pass
@@ -177,13 +178,10 @@ for obs in obs_list:
 
 			flag = False
 
-			if file[-4:len(file)] != '.fil':
+			try:
+				f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1)
+			except (NotImplementedError, IndexError, UnicodeDecodeError) as e:
 				flag = True
-			else:
-				try:
-					f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1)
-				except (NotImplementedError, IndexError, UnicodeDecodeError) as e:
-					flag = True
 
 			if flag:
 				print("Flagging " + obs + "...")
