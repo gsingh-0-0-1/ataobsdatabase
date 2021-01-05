@@ -139,7 +139,7 @@ for obs in obs_list:
 
 		if os.path.isdir(f_dir): 
 			dir_temp = os.listdir(database_dir + obs + "/" + subd)
-			if "data.written" in dir_temp and len(dir_temp) > 5: #correction for a dumb mistake I made
+			if "data.written" in dir_temp and len(dir_temp) > 3: #correction for a dumb mistake I made
 				continue
 			else:
 				pass
