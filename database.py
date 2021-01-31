@@ -208,34 +208,50 @@ for obs in obs_list:
 
 					f = Waterfall(obs_f_dir + "/" + file, t_start=start, t_stop=stop)
 
-					f.plot_waterfall(logged = plot_w_log)
 
-					#modify the yticks appropriately
-					plt.yticks(np.arange(0, time_break_interval, 5), np.arange(0, time_break_interval, 5) + tstamp)
+					waterfallname = f_dir + "/" + file + '_waterfall_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png'
 
-					plt.savefig(f_dir + "/" + file + '_waterfall_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
-					plt.clf()
+					if os.path.isfile(waterfallname):
+						pass
+					else:
+						f.plot_waterfall(logged = plot_w_log)
 
-					print(f_dir + "/" + file + '_waterfall_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
+						#modify the yticks appropriately
+						plt.yticks(np.arange(0, time_break_interval, 5), np.arange(0, time_break_interval, 5) + tstamp)
+
+						plt.savefig(waterfallname)
+						plt.clf()
+
+					print(waterfallname)
 
 					#plot the spectrum
-					f.plot_spectrum(logged = plot_w_log)
+					spectrumname = f_dir + "/" + file + '_spectrum_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png'
 
-					plt.savefig(f_dir + "/" + file + '_spectrum_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
-					plt.clf()
+					if os.path.isfile(spectrumname):
+						pass
+					else:
+						f.plot_spectrum(logged = plot_w_log)
 
-					print(f_dir + "/" + file + '_spectrum_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
+						plt.savefig(spectrumname)
+						plt.clf()
+
+					print(spectrumname)
 
 					#plot the timeseries
-					f.plot_time_series()
+					timeseriesname = f_dir + "/" + file + '_timeseries_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png'
 
-					#modify the xticks appropriately
-					plt.xticks(np.arange(0, time_break_interval, 5), np.arange(0, time_break_interval, 5) + tstamp)
+					if os.path.isfile(timeseriesname):
+						pass
+					else:
+						f.plot_time_series()
 
-					plt.savefig(f_dir + "/" + file + '_timeseries_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
-					plt.clf()
+						#modify the xticks appropriately
+						plt.xticks(np.arange(0, time_break_interval, 5), np.arange(0, time_break_interval, 5) + tstamp)
 
-					print(f_dir + "/" + file + '_timeseries_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png')
+						plt.savefig(timeseriesname)
+						plt.clf()
+
+					print(timeseriesname)
 
 				except (IndexError, NotImplementedError) as e:
 					f = open("obs.flagged", "a")
