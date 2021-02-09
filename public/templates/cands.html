@@ -36,6 +36,16 @@
 		obj.style.width = (obj.contentWindow.document.documentElement.scrollWidth * scale) + 'px';
 	}
 
+	function addImage(src, name){
+		var testimg = new Image()
+		testimg.src = src
+		testimg.onload = function(){
+			filesdiv.innerHTML += name + "<br>"
+			filesdiv.innerHTML += "<div style='position: relative; display: inline-block; width: " + testimg.naturalWidth + "px; height: " + testimg.naturalHeight + "px; background-image: url(" + src + ")'>"
+			filesdiv.innerHTML += "<br>"
+		}
+	}
+
 	var url = window.location.search
 	var urlParams = new URLSearchParams(url);
 	var obs = urlParams.get("obs");
@@ -60,9 +70,20 @@
 					continue
 				}
 				console.log(dirlisting[i])
-				filesdiv.innerHTML += dirlisting[i] + "<br>"
-				filesdiv.innerHTML += "<iframe style='position: relative; display: initial; left: 0%;' src=/fetchcand?obs=" + obs + "&file=" + dirlisting[i] + " onload='resizeIframe(this, 1)'></iframe><br>"
-				setTimeout(function(){}, 100)
+				//filesdiv.innerHTML += "<iframe style='position: relative; display: initial; left: 0%;' src=/fetchcand?obs=" + obs + "&file=" + dirlisting[i] + " onload='resizeIframe(this, 1)'></iframe><br>"
+				window["imgurl" + i] = "/fetchcand?obs=" + obs + "&file=" + dirlisting[i]
+				window["fname" + i] = dirlisting[i]
+				addImage(window["imgurl" + i], window["fname" + i])
+				/*var testimg = new Image()
+				testimg.src = window["imgurl" + i]
+				testimg.onload = function(){
+					console.log(testimg.naturalWidth)
+					filesdiv.innerHTML += window["fname" + i] + "<br>"
+					filesdiv.innerHTML += "<div style='position: relative; display: inline-block; width: " + testimg.naturalWidth + "px; height: " + testimg.naturalHeight + "px; background-image: url(" + window["imgurl" + i] + ")'>"
+					filesdiv.innerHTML += "<br>"
+				}*/
+				//filesdiv.innerHTML += "<div style='position: relative; display: inline-block; width: 20%; height: 20px; background-image: url(" + imgurl + ")'>"// onload='resizeIframe(this, 1)'></div>"
+				//setTimeout(function(){}, 100)
 			}
 		}
 	}
