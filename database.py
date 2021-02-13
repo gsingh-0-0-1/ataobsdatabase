@@ -13,6 +13,7 @@ dosql = sys.argv[1]
 
 if dosql == "true":
 	dosql = True
+	dbname = 'obsinfo'
 	import mysql.connector
 else:
 	dosql = False
@@ -67,7 +68,7 @@ else:
 dblist = os.listdir(database_dir)
 
 if dosql:
-	cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database='obs_info')
+	cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database=dbname)
 
 	cnx.close()
 
@@ -119,7 +120,7 @@ for obs in obs_list:
 
 			command = '''insert into obs_details (obs_name, source, date, time) values ("''' + obs + '''", "''' + source + '''", "''' + date + '''", "''' + time + '''")'''
 
-			cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database='obs_info')
+			cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database=dbname)
 
 			cnx.cursor().execute(command)
 
