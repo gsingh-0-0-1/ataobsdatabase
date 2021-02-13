@@ -86,7 +86,12 @@ for obs in obs_list:
 
 	print(obs)
 
-	if "sql.written" in os.listdir(database_dir + obs):
+	obslisting = os.listdir(database_dir + obs)
+
+	if "obs.dnp" in obslisting: #obs.dnp => obs.do.not.process
+		continue
+
+	if "sql.written" in obslisting:
 		pass
 	else:
 		antennalist = ['1a', '1c', '1f', '1k', '2a', '2h', '4g', '4j', '5c']
