@@ -4,17 +4,18 @@ var fs = require('fs');
 const {URLSearchParams} = require('url')
 
 const app = express()
-const port = 80
+const port = 8080
 
 const parent_stem = '/mnt/datay-netStorage-40G/'
 const parent_obs_dir = '/mnt/datay-netStorage-40G/new_obs/'
-const parent_database_dir = '/home/gurmehar/obs_database/'
+const parent_database_dir = '/home/gsingh/obs_database/'
 //app.use(express.static('static'))
 app.use(express.static('public'));
 
 const user = process.argv[2];
 const password = process.argv[3];
 const host = "127.0.0.1"
+const dbname = "obsinfo"
 
 console.log(user, password)
 
@@ -29,7 +30,7 @@ app.get('/obslist', (req, res) => {
 		host     : host,
 		user     : user,
 		password : password,
-		database : 'obs_info'
+		database : dbname
 	});
 
 	var results_return = ''
@@ -37,7 +38,7 @@ app.get('/obslist', (req, res) => {
 	connection.connect()
 
 	connection.query("select obs_name, source from " + query_table, function (error, results, fields) {
-  		//if (error) throw error;
+  		if (error) throw error;
 		if (results == undefined){
 			res.send('')
 		}
@@ -60,7 +61,7 @@ app.get('/pulsarobslist', (req, res) => {
                 host     : host,
                 user     : user,
                 password : password,
-                database : 'obs_info'
+                database : dbname
         });
 
 	connection.connect()
@@ -128,7 +129,7 @@ app.get('/querybysource', (req, res) => {
 		host     : host,
 		user     : user,
 		password : password,
-		database : 'obs_info'
+		database : dbname
 	});
 
 	var results_return = '';
@@ -160,7 +161,7 @@ app.get('/querybydate', (req, res) => {
 		return ''
 	}
 	var comparison = urlParams.get("comp")
-	var connection = mysql.createConnection({host: host, user: user, password: password, database: 'obs_info'});
+	var connection = mysql.createConnection({host: host, user: user, password: password, database: dbname});
 	var results_return = ''
 
 	connection.connect()
@@ -199,7 +200,7 @@ app.get('/fullinpquery', (req, res) => {
         if (date_inp == ''){
                 comparison = "on"
         }
-        var connection = mysql.createConnection({host: host, user: user, password: password, database: 'obs_info'});
+        var connection = mysql.createConnection({host: host, user: user, password: password, database: dbname});
         var results_return = ''
 
         connection.connect()
@@ -240,7 +241,7 @@ app.get('/getsourcename', (req, res) => {
 		host     : host,
 		user     : user,
 		password : password,
-		database : 'obs_info'
+		database : dbname
 	});	
 
 	var results_return = ''
