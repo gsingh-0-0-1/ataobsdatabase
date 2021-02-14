@@ -19,6 +19,7 @@ else:
 	dosql = False
 
 time_break_interval = 60
+maxloadval = 10
 
 config = input("Would you like to initialize from a config file? (y/n) : ")
 
@@ -185,7 +186,7 @@ for obs in obs_list:
 			flag = False
 
 			try:
-				f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1)
+				f = Waterfall(obs_f_dir + "/" + file, t_start=0, t_stop=1, max_load = maxloadval)
 			except (NotImplementedError, IndexError, UnicodeDecodeError) as e:
 				flag = True
 
@@ -212,7 +213,7 @@ for obs in obs_list:
 					start = int(tstamp/sampling_time)
 					stop = int((tstamp + time_break_interval)/sampling_time)
 
-					f = Waterfall(obs_f_dir + "/" + file, t_start=start, t_stop=stop)
+					f = Waterfall(obs_f_dir + "/" + file, t_start=start, t_stop=stop, max_load = maxloadval)
 
 
 					waterfallname = f_dir + "/" + file + '_waterfall_' + str(tstamp) + "s_to_" + str(tstamp+time_break_interval) + 's_.png'
