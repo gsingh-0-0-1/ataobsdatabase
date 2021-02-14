@@ -21,10 +21,14 @@ else:
 time_break_interval = 60
 maxloadval = 10
 
-config = input("Would you like to initialize from a config file? (y/n) : ")
+try:
+	config_fname = sys.argv[4]
+	config = True
+except IndexError:
+	config = input("Would you like to initialize from a config file? (y/n) : ")
 
-if config != 'y': config = False
-if config == 'y': config = True
+	if config != 'y': config = False
+	if config == 'y': config = True
 
 if config:
 	config_fname = input("Enter config filename (with extension): ")
