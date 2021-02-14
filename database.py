@@ -28,10 +28,11 @@ except IndexError:
 	config = input("Would you like to initialize from a config file? (y/n) : ")
 
 	if config != 'y': config = False
-	if config == 'y': config = True
+	if config == 'y': 
+		config = True
+		config_fname = input("Enter config filename (with extension): ")
 
 if config:
-	config_fname = input("Enter config filename (with extension): ")
 	init_info = open(config_fname, "r")
 	init_info = init_info.read()
 	init_info = init_info.split("\n")
