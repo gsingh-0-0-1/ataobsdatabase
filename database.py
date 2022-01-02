@@ -89,10 +89,10 @@ for obs in obs_list:
 		os.mkdir(database_dir + obs)
 
 	#get files/directories in the obs dir
-        try:
-            this_obs_subdir = [f.path.split("/")[-1] for f in os.scandir(parent_stem + obs_dir + obs) if f.is_dir()]
-        except PermissionError:
-            continue
+		try:
+			this_obs_subdir = [f.path.split("/")[-1] for f in os.scandir(parent_stem + obs_dir + obs) if f.is_dir()]
+		except PermissionError:
+			continue
 
 	print(obs)
 
