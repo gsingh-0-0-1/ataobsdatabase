@@ -89,7 +89,10 @@ for obs in obs_list:
 		os.mkdir(database_dir + obs)
 
 	#get files/directories in the obs dir
-	this_obs_subdir = [f.path.split("/")[-1] for f in os.scandir(parent_stem + obs_dir + obs) if f.is_dir()]
+        try:
+            this_obs_subdir = [f.path.split("/")[-1] for f in os.scandir(parent_stem + obs_dir + obs) if f.is_dir()]
+        except PermissionError:
+            continue
 
 	print(obs)
 
@@ -101,7 +104,7 @@ for obs in obs_list:
 	if "sql.written" in obslisting:
 		pass
 	else:
-		antennalist = ['1a', '1c', '1f', '1k', '2a', '2h', '4g', '4j', '5c']
+		antennalist = ['1a', '1c', '1f', '1k', '2a', '2h', '4g', '4j', '5c', '2b', '3c']
 		for antenna in antennalist:
 			try:
 				f = open(parent_stem + obs_dir + obs + "/" + antenna + "/obs.header")

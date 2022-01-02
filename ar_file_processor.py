@@ -36,7 +36,8 @@ dblist = os.listdir(database_dir)
 if dosql:
 	cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3],
                               host='127.0.0.1',
-                              database='obs_info')
+                              database='obsinfo',
+                              auth_plugin='mysql_native_password')
 
 	cnx.close()
 
@@ -105,7 +106,7 @@ for obs in os.listdir(obs_dir):
             command = '''insert ignore into pulsar_obs_details (obs_name, source, date, time) values
             ("''' + obs + '''", "''' + source + '''", "''' + date + '''", "''' + time + '''")'''
 
-            cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database='obs_info')
+            cnx = mysql.connector.connect(user=sys.argv[2], password=sys.argv[3], host='127.0.0.1', database='obsinfo', auth_plugin='mysql_native_password')
 
             cnx.cursor().execute(command)
             cnx.commit()
